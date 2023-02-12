@@ -1,3 +1,7 @@
+"""
+Module containing model database definitions.
+"""
+
 from sqlalchemy import Column, Float, Index, String, text
 from sqlalchemy.dialects.mysql import BIGINT, DECIMAL, LONGTEXT, INTEGER, SMALLINT, TINYINT
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,6 +10,9 @@ Base = declarative_base()
 
 
 class Nest(Base):
+    """
+    Represents a nest in the database.
+    """
     __tablename__ = 'nest'
     __table_args__ = (
         Index('CoordsIndex', 'lat', 'lon'),
