@@ -131,8 +131,9 @@ dmypy.json
 # VS Code
 .vscode/
 
-# Config file
+# Config files
 config/areas.json
+config/config.ini
 
 # OSM data
 data/

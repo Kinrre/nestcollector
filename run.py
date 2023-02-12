@@ -8,8 +8,11 @@ import sys
 
 from nestcollector.overpass import Overpass
 
-CONFIG_PATH = 'config/areas.json'
-CONFIG_EXAMPLE_PATH = 'config/areas.json.example'
+CONFIG_PATH = 'config/config.ini'
+CONFIG_EXAMPLE_PATH = 'config/config.ini.example'
+
+CONFIG_AREAS_PATH = 'config/areas.json'
+CONFIG_AREAS_EXAMPLE_PATH = 'config/areas.json.example'
 
 
 class NestCollector:
@@ -17,8 +20,6 @@ class NestCollector:
     Class for running the NestCollector.
 
     Attributes:
-        config_path (str): The path to the config file.
-        config_example_path (str): The path to the example config file.
         overpass (Overpass): The Overpass API instance.
     """
 
@@ -26,20 +27,22 @@ class NestCollector:
         """
         Initializes the NestCollector class.
         """
-        self.config_path = CONFIG_PATH
-        self.config_example_path = CONFIG_EXAMPLE_PATH
-
         # Set the logging level
         logging.basicConfig(level = logging.INFO)
 
         # Check that the config file exists
         if not os.path.isfile(CONFIG_PATH):
-            logging.error(f'Missing {CONFIG_PATH} file, please use https://fence.mcore-services.be/ to create the geofence!')
-            logging.error(f'Example config file: {CONFIG_EXAMPLE_PATH}')
+            logging.error(f'Missing {CONFIG_PATH} file, please copy {CONFIG_EXAMPLE_PATH} and fill it with your database settings!')
+            sys.exit(1)
+
+        # Check that the config areas file exists
+        if not os.path.isfile(CONFIG_AREAS_PATH):
+            logging.error(f"Missing {CONFIG_AREAS_PATH} file, please use 'https://fence.mcore-services.be' to create the geofence!")
+            logging.error(f'Example areas file: {CONFIG_AREAS_EXAMPLE_PATH}')
             sys.exit(1)
 
         # Get the Overpass API instance
-        self.overpass = Overpass(areas_path=self.config_path)
+        self.overpass = Overpass(areas_path=CONFIG_AREAS_PATH)
     
     def run(self) -> None:
         """

@@ -1,0 +1,7 @@
+[DEFAULT]
+# Database settings to keep updated the donator count
+host = 127.0.0.1
+port = 3306
+name = golbat
+user = YOUR_USER_HERE
+password = YOUR_PASSWORD_HERE
