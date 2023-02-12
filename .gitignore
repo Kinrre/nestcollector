@@ -128,5 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# VS Code
+.vscode/
+
 # Config file
 config/areas.json
+
+# OSM data
+data/
