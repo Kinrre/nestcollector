@@ -160,6 +160,10 @@ class Overpass:
         Returns:
             List[dict]: The OpenStreetMap data.
         """
+        # Log the start of the process
+        logging.info('Getting OpenStreetMap data...')
+        start = time.time()
+
         # Create the data folder if it doesn't exist
         os.makedirs('data', exist_ok=True)
 
@@ -175,12 +179,16 @@ class Overpass:
             
             # Query the OpenStreetMap data
             logging.info(f'Querying OpenStreetMap data for {name} (this will take ages)...')
-            start = time.time()
+            _start = time.time()
             _osm_data = self._query_osm_data(bbox, date)
             osm_data.append(_osm_data)
             with open(f'data/{name}.json', 'w') as f:
                 json.dump(_osm_data, f)
-            end = time.time()
-            logging.info(f'Finished querying OpenStreetMap data for {name} in {end - start:.2f} seconds.')
-
+            _end = time.time()
+            logging.info(f'Finished querying OpenStreetMap data for {name} in {_end - _start:.2f} seconds.')
+        
+        # Log the end of the process
+        end = time.time()
+        logging.info(f'Finished getting OpenStreetMap data in {end - start:.2f} seconds.')
+        
         return osm_data

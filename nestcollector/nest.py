@@ -42,7 +42,7 @@ class Nest:
         Returns:
             Tuple[List[Node], List[Way], List[Relation]]: The nodes, ways, and relations.
         """
-        logging.info('Getting OSM elements...')
+        logging.info('Processing OSM elements...')
         start = time.time()
         nodes, ways, relations = [], [], []
         for area in self.osm_data:
