@@ -2,6 +2,7 @@
 Module containing model database definitions.
 """
 
+from geoalchemy2 import Geometry
 from sqlalchemy import Column, Float, Index, String, text
 from sqlalchemy.dialects.mysql import BIGINT, DECIMAL, LONGTEXT, INTEGER, SMALLINT, TINYINT
 from sqlalchemy.ext.declarative import declarative_base
@@ -13,7 +14,7 @@ class Nest(Base):
     """
     Represents a nest in the database.
     """
-    __tablename__ = 'nest'
+    __tablename__ = 'nests'
     __table_args__ = (
         Index('CoordsIndex', 'lat', 'lon'),
     )
@@ -34,3 +35,5 @@ class Nest(Base):
     pokemon_ratio = Column(Float(asdecimal=True), server_default=text('0'))
     pokemon_count = Column(Float(asdecimal=True), server_default=text('0'))
     nest_submitted_by = Column(String(200))
+    area_name = Column(String(250))
+    polygon_wkb = Column(Geometry(), nullable=False)
