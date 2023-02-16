@@ -10,6 +10,10 @@ from .osm_elements import Node, Relation, Way
 
 from typing import List, Tuple
 
+# Polygon types
+POLYGON = 0
+MULTIPOLYGON = 1
+
 
 class Nest:
 
@@ -63,7 +67,13 @@ class Nest:
         logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {end - start:.2f} seconds.')
         return nodes, ways, relations
 
-    def get_nests(self) -> List[NestModel]:
+    def _get_nests_ways(self) -> List[NestModel]:
+        """
+        Gets the nests from the ways.
+
+        Returns:
+            List[NestModel]: The nests.
+        """
         nests = []
         for way in self.ways:
             nests.append(
@@ -71,11 +81,45 @@ class Nest:
                     nest_id=way.id,
                     lat=0,
                     lon=0,
-                    polygon_type=0,
+                    polygon_type=POLYGON,
                     polygon_path='',
                     type=0,
                     name=way.name,
                     polygon_wkb=way.polygon
                 )
             )
+        return nests
+
+    def _get_nests_relations(self) -> List[NestModel]:
+        """
+        Gets the nests from the relations.
+
+        Returns:
+            List[NestModel]: The nests.
+        """
+        nests = []
+        for relation in self.relations:
+            nests.append(
+                NestModel(
+                    nest_id=relation.id,
+                    lat=0,
+                    lon=0,
+                    polygon_type=MULTIPOLYGON,
+                    polygon_path='',
+                    type=0,
+                    name=relation.name,
+                    polygon_wkb=relation.multipolygon
+                )
+            )
+        return nests
+    
+    def get_nests(self) -> List[NestModel]:
+        """
+        Gets the nests from the OSM elements.
+
+        Returns:
+            List[NestModel]: The nests.
+        """
+        nests = self._get_nests_ways()
+        nests.extend(self._get_nests_relations())
         return nests

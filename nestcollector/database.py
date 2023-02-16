@@ -61,7 +61,7 @@ class Database:
         Args:
             nests (List[Nest]): The nests to save.
         """
-        logging.info('Saving nests to database...')
+        logging.info(f'Saving {len(nests)} nests to database...')
         start = time.time()
         for nest in nests:
             self.db.merge(nest)
