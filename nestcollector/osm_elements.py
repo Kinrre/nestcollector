@@ -2,7 +2,8 @@
 Module containing the OSMElements class, which is used to parse OSM elements from the Overpass API.
 """
 
-from typing import List, Optional
+from shapely.geometry import MultiPolygon, Polygon
+from typing import List, Mapping, Optional
 
 
 class Node:
@@ -65,6 +66,8 @@ class Way:
         id (int): The ID of the element.
         nodes (List[int]): The nodes of the way.
         tags (Optional[dict]): The tags of the element.
+        name (Optional[str]): The name of the way.
+        polygon (Optional[Polygon]): The polygon of the way.
     """
 
     def __init__(self, type: str, id: int, nodes: List[int], tags: Optional[dict] = None) -> None:
@@ -81,6 +84,21 @@ class Way:
         self.id = id
         self.nodes = nodes
         self.tags = tags
+        self.name = tags['name'] if tags and 'name' in tags else None
+        self.polygon = None
+
+    def build_polygon(self, nodes: Mapping[int, Node]) -> Polygon:
+        """
+        Builds a polygon from the way's nodes.
+
+        Args:
+            nodes (Mapping[int, Node]): The nodes of the way.
+
+        Returns:
+            Polygon: The polygon of the way.
+        """
+        polygon = Polygon([(nodes[node].lat, nodes[node].lon) for node in self.nodes])
+        return polygon
 
     def __eq__(self, other: 'Way') -> bool:
         """
@@ -113,6 +131,8 @@ class Relation:
         id (int): The ID of the element.
         members (List[dict]): The members of the relation.
         tags (Optional[dict]): The tags of the element.
+        name (Optional[str]): The name of the relation.
+        multipolygon (Optional[MultiPolygon]): The multipolygon of the relation.
     """
 
     def __init__(self, type: str, id: int, members: List[dict], tags: Optional[dict] = None) -> None:
@@ -129,6 +149,28 @@ class Relation:
         self.id = id
         self.members = members
         self.tags = tags
+        self.name = tags['name'] if tags and 'name' in tags else None
+        self.multipolygon = None
+
+    def build_multipolygon(self, ways: Mapping[int, Way]) -> MultiPolygon:
+        """
+        Builds a multipolygon from the relation's ways.
+
+        Args:
+            ways (Mapping[int, Way]): The ways of the relation.
+
+        Returns:
+            MultiPolygon: The multipolygon of the relation.
+        """
+        polygons = []
+        for member in self.members:
+            if member['type'] == 'way':
+                way = ways[member['ref']]
+                if way.polygon is None:
+                    way.polygon = way.build_polygon(ways)
+                polygons.append(way.polygon)
+        multipolygon = MultiPolygon(polygons)
+        return multipolygon
 
     def __eq__(self, other: 'Relation') -> bool:
         """
