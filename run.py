@@ -7,7 +7,8 @@ import logging
 import os
 import sys
 
-from nestcollector.nest_database import NestDatabase
+from nestcollector.nest import Nest
+from nestcollector.database import Database
 from nestcollector.overpass import Overpass
 
 CONFIG_PATH = 'config/config.ini'
@@ -53,7 +54,7 @@ class NestCollector:
         self.overpass = Overpass(areas_path=CONFIG_AREAS_PATH)
 
         # Get the database instance
-        self.database = NestDatabase(
+        self.db = Database(
             host=self.get_db_host(),
             port=self.get_db_port(),
             name=self.get_db_name(),
@@ -65,35 +66,53 @@ class NestCollector:
         """
         Runs the NestCollector.
         """
-        self.overpass.get_osm_data()
+        osm_data = self.overpass.get_osm_data()
+        nest = Nest(osm_data)
+        nests = nest.get_nests()
+        self.db.save_nests(nests)
 
-    def get_db_host(self):
+    def get_db_host(self) -> str:
         """
         Returns the IP host of the db.
+
+        Returns:
+            str: The IP host of the db.
         """
         return self.config['DB']['HOST']
 
-    def get_db_port(self):
+    def get_db_port(self) -> str:
         """
         Returns the port of the db.
+
+        Returns:
+            str: The port of the db.
         """
         return self.config['DB']['PORT']
     
-    def get_db_name(self):
+    def get_db_name(self) -> str:
         """
         Returns the database name.
+
+        Returns:
+            str: The database name.
         """
         return self.config['DB']['NAME']
     
-    def get_db_user(self):
+    def get_db_user(self) -> str:
         """
         Returns the database username.
+
+        Returns:
+            str: The database username.
         """
         return self.config['DB']['USER']
     
-    def get_db_password(self):
+    def get_db_password(self) -> str:
         """
         Returns the database username password.
+
+        Returns:
+            str: The database username password.
         """
         return self.config['DB']['PASSWORD']
 
