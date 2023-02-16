@@ -79,8 +79,8 @@ class Nest:
             nests.append(
                 NestModel(
                     nest_id=way.id,
-                    lat=0,
-                    lon=0,
+                    lat=way.polygon.centroid.x,
+                    lon=way.polygon.centroid.y,
                     polygon_type=POLYGON,
                     polygon_path='',
                     type=0,
@@ -102,8 +102,8 @@ class Nest:
             nests.append(
                 NestModel(
                     nest_id=relation.id,
-                    lat=0,
-                    lon=0,
+                    lat=relation.multipolygon.centroid.x,
+                    lon=relation.multipolygon.centroid.y,
                     polygon_type=MULTIPOLYGON,
                     polygon_path='',
                     type=0,
