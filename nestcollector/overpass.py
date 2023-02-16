@@ -9,6 +9,7 @@ import logging
 import json
 import os
 import requests
+import time
 
 
 class Overpass:
@@ -167,7 +168,10 @@ class Overpass:
                 continue
             
             # Query the OpenStreetMap data
-            logging.info(f'Querying OpenStreetMap data for {name}...')
+            logging.info(f'Querying OpenStreetMap data for {name} (this will take ages)...')
+            start = time.time()
             response = self._query_osm_data(bbox, date)
             with open(f'data/{name}.json', 'w') as f:
                 json.dump(response, f)
+            end = time.time()
+            logging.info(f'Finished querying OpenStreetMap data for {name} in {end - start:.2f} seconds.')
