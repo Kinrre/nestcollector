@@ -1,7 +1,8 @@
 """
-Module containing the NestDatabase class, which is used to connect to the database and store the nests.
+Module containing the Database class, which is used to connect to the database and store the nests.
 """
-from .models import Base
+from .models import Base, Nest
+from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4'
 
 
-class NestDatabase:
+class Database:
     """
     Class for connecting to the database and storing the nests.
 
@@ -48,3 +49,14 @@ class NestDatabase:
         Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         self.db = SessionLocal()
+
+    def save_nests(self, nests: List[Nest]) -> None:
+        """
+        Saves the nests to the database.
+
+        Args:
+            nests (List[Nest]): The nests to save.
+        """
+        for nest in nests:
+            self.db.merge(nest)
+        self.db.commit()
