@@ -93,14 +93,14 @@ class Nest(Base):
         Initializes a new nest.
 
         Args:
-            nest_id: The ID of the nest.
-            lat: The latitude of the nest.
-            lon: The longitude of the nest.
-            polygon_type: The type of the polygon (0 Polygon and 1 MultiPolygon).
-            polygon_path: The path of the polygon.
-            type: The type of the nest (Unknown).
-            name: The name of the nest.
-            polygon_wkb: The WKB representation of the polygon.
+            nest_id (int): The ID of the nest.
+            lat (float): The latitude of the nest.
+            lon (float): The longitude of the nest.
+            polygon_type (int): The type of the polygon (0 Polygon and 1 MultiPolygon).
+            polygon_path (str): The path of the polygon.
+            type (int): The type of the nest (Unknown).
+            name (str): The name of the nest.
+            polygon_wkb (str): The WKB representation of the polygon.
         """
         self.nest_id = nest_id
         self.lat = lat
