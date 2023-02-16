@@ -150,28 +150,37 @@ class Overpass:
         response = requests.post(self.url, data=query)
         return response.json()
 
-    def get_osm_data(self, date: str = '2019-02-24T00:00:00Z') -> None:
+    def get_osm_data(self, date: str = '2019-02-24T00:00:00Z') -> List[dict]:
         """
         Gets the OpenStreetMap data for the given date and bounding box and saves it in the data folder.
 
         Args:
             date (str, optional): The date to query. Defaults to '2019-02-24T00:00:00Z'.
+
+        Returns:
+            List[dict]: The OpenStreetMap data.
         """
         # Create the data folder if it doesn't exist
         os.makedirs('data', exist_ok=True)
 
         # Query the OpenStreetMap data for each bounding box
+        osm_data = []
         for name, bbox in zip(self.names, self.bboxes):
             # Skip if the data already exists
             if os.path.exists(f'data/{name}.json'):
                 logging.info(f'OpenStreetMap data for {name} already exists.')
+                with open(f'data/{name}.json', 'r') as f:
+                    osm_data.append(json.load(f))
                 continue
             
             # Query the OpenStreetMap data
             logging.info(f'Querying OpenStreetMap data for {name} (this will take ages)...')
             start = time.time()
-            response = self._query_osm_data(bbox, date)
+            _osm_data = self._query_osm_data(bbox, date)
+            osm_data.append(_osm_data)
             with open(f'data/{name}.json', 'w') as f:
-                json.dump(response, f)
+                json.dump(_osm_data, f)
             end = time.time()
             logging.info(f'Finished querying OpenStreetMap data for {name} in {end - start:.2f} seconds.')
+
+        return osm_data
