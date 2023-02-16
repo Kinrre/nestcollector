@@ -2,10 +2,12 @@
 Script to run nestcollector.
 """
 
+import configparser
 import logging
 import os
 import sys
 
+from nestcollector.nest_database import NestDatabase
 from nestcollector.overpass import Overpass
 
 CONFIG_PATH = 'config/config.ini'
@@ -20,7 +22,9 @@ class NestCollector:
     Class for running the NestCollector.
 
     Attributes:
+        config (configparser.ConfigParser): The config parser.
         overpass (Overpass): The Overpass API instance.
+        database (NestDatabase): The database instance.
     """
 
     def __init__(self) -> None:
@@ -41,14 +45,57 @@ class NestCollector:
             logging.error(f'Example areas file: {CONFIG_AREAS_EXAMPLE_PATH}')
             sys.exit(1)
 
+        # Config
+        self.config = configparser.ConfigParser()
+        self.config.read(CONFIG_PATH)
+
         # Get the Overpass API instance
         self.overpass = Overpass(areas_path=CONFIG_AREAS_PATH)
+
+        # Get the database instance
+        self.database = NestDatabase(
+            host=self.get_db_host(),
+            port=self.get_db_port(),
+            name=self.get_db_name(),
+            user=self.get_db_user(),
+            password=self.get_db_password()
+        )
     
     def run(self) -> None:
         """
         Runs the NestCollector.
         """
         self.overpass.get_osm_data()
+
+    def get_db_host(self):
+        """
+        Returns the IP host of the db.
+        """
+        return self.config['DB']['HOST']
+
+    def get_db_port(self):
+        """
+        Returns the port of the db.
+        """
+        return self.config['DB']['PORT']
+    
+    def get_db_name(self):
+        """
+        Returns the database name.
+        """
+        return self.config['DB']['NAME']
+    
+    def get_db_user(self):
+        """
+        Returns the database username.
+        """
+        return self.config['DB']['USER']
+    
+    def get_db_password(self):
+        """
+        Returns the database username password.
+        """
+        return self.config['DB']['PASSWORD']
 
 
 if __name__ == '__main__':

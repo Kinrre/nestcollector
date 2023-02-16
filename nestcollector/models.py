@@ -2,12 +2,24 @@
 Module containing model database definitions.
 """
 
-from geoalchemy2 import Geometry
-from sqlalchemy import Column, Float, Index, String, text
+from sqlalchemy import Column, Float, Index, String, func, text
+from sqlalchemy.types import UserDefinedType
 from sqlalchemy.dialects.mysql import BIGINT, DECIMAL, LONGTEXT, INTEGER, SMALLINT, TINYINT
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
+
+class Geometry(UserDefinedType):
+
+    def get_col_spec(self):
+        return 'GEOMETRY'
+
+    def bind_expression(self, bindvalue):
+        return func.ST_GeomFromText(bindvalue, type_=self)
+
+    def column_expression(self, col):
+        return func.ST_AsText(col, type_=self)
 
 
 class Nest(Base):
