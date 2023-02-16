@@ -11,6 +11,9 @@ Base = declarative_base()
 
 
 class Geometry(UserDefinedType):
+    """
+    Represents a geometry column in the database.
+    """
 
     def get_col_spec(self):
         return 'GEOMETRY'
