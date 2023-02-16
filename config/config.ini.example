@@ -1,5 +1,16 @@
 [DEFAULT]
-# Database settings to keep updated the donator count
+# The path to the golbat directory to save the output geojson file
+output_geojson = YOUR_PATH_TO_GOLBAT
+
+[NESTS]
+# Minimum spawnpoints to include the possible nest into the geojson file
+minimum_spawnpoints = 2
+
+# Minimum m2 to include the possible nest into the geojson file
+minimum_m2 = 30
+
+[DB]
+# Database settings to store the nests
 host = 127.0.0.1
 port = 3306
 name = golbat
