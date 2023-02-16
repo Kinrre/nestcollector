@@ -49,7 +49,7 @@ class Database:
             user=user,
             password=password
         )
-        engine = create_engine(connection_url)
+        engine = create_engine(connection_url, pool_pre_ping=True)
         Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         self.db = SessionLocal()
