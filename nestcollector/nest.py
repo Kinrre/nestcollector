@@ -76,6 +76,9 @@ class Nest:
         """
         nests = []
         for way in self.ways:
+            # Skip ways that don't have a polygon
+            if way.polygon is None:
+                continue
             nests.append(
                 NestModel(
                     nest_id=way.id,
@@ -100,6 +103,9 @@ class Nest:
         """
         nests = []
         for relation in self.relations:
+            # Skip relations that don't have a multipolygon
+            if relation.multipolygon is None:
+                continue
             nests.append(
                 NestModel(
                     nest_id=relation.id,

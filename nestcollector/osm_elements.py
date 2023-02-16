@@ -116,6 +116,9 @@ class Way:
         Returns:
             Polygon: The polygon of the way.
         """
+        # Check if the way has at least 3 nodes
+        if len(self.nodes) < 3:
+            return None
         polygon = Polygon([(nodes[node].lat, nodes[node].lon) for node in self.nodes])
         polygon = orient(polygon) # Orient the polygon to compute the m2 area
         return polygon
@@ -204,7 +207,11 @@ class Relation:
             if member['type'] == 'way':
                 way = ways[member['ref']]
                 if way.polygon is None:
-                    way.polygon = way.build_polygon(ways)
+                    polygon = way.build_polygon(ways)
+                    # Check if the way is a polygon
+                    if polygon is None:
+                        return None
+                    way.polygon = polygon
                 polygons.append(way.polygon)
         multipolygon = MultiPolygon(polygons)
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
