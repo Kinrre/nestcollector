@@ -66,9 +66,14 @@ class NestCollector:
         """
         Runs the NestCollector.
         """
+        # Get the OSM data
         osm_data = self.overpass.get_osm_data()
+
+        # Get the nests
         nest = Nest(osm_data)
         nests = nest.get_nests()
+
+        # Save the nests to the database
         self.db.save_nests(nests)
 
     def get_db_host(self) -> str:
