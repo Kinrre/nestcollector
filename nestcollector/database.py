@@ -1,6 +1,10 @@
 """
 Module containing the Database class, which is used to connect to the database and store the nests.
 """
+
+import logging
+import time
+
 from .models import Base, Nest
 from typing import List
 
@@ -57,6 +61,10 @@ class Database:
         Args:
             nests (List[Nest]): The nests to save.
         """
+        logging.info('Saving nests to database...')
+        start = time.time()
         for nest in nests:
             self.db.merge(nest)
         self.db.commit()
+        end = time.time()
+        logging.info(f'Saved nests to database in {end - start:.2f} seconds.')
