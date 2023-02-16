@@ -88,6 +88,7 @@ class Nest(Base):
             type: int,
             name: str,
             m2: float,
+            area_name: str,
             polygon_wkb: str,
         ) -> None:
         """
@@ -102,6 +103,7 @@ class Nest(Base):
             type (int): The type of the nest (Unknown).
             name (str): The name of the nest.
             m2 (float): The area of the nest in m2.
+            area_name (str): The name of the area.
             polygon_wkb (str): The WKB representation of the polygon.
         """
         self.nest_id = nest_id
@@ -112,4 +114,5 @@ class Nest(Base):
         self.type = type
         self.name = name
         self.m2 = m2
+        self.area_name = area_name
         self.polygon_wkb = polygon_wkb

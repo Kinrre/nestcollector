@@ -1,5 +1,5 @@
 """
-Module for creating the Nest class, which is used to store and process the data from the Overpass API.
+Module for creating the Nest class, which is used to store and processing the data from the Overpass API.
 """
 
 import logging
@@ -16,15 +16,29 @@ MULTIPOLYGON = 1
 
 
 class Nest:
+    """
+    Class for storing and processing the data from the Overpass API.
 
-    def __init__(self, osm_data: List[dict]) -> None:
+    Attributes:
+        osm_data (List[dict]): The data from the Overpass API.
+        area_names (List[str]): The names of the areas.
+        nodes (List[Node]): The nodes from the Overpass API data.
+        ways (List[Way]): The ways from the Overpass API data.
+        relations (List[Relation]): The relations from the Overpass API data.
+        nodes_dict (Dict[int, Node]): The nodes from the Overpass API data as a dictionary.
+        ways_dict (Dict[int, Way]): The ways from the Overpass API data as a dictionary.
+    """
+
+    def __init__(self, osm_data: List[dict], area_names: List[str]) -> None:
         """
         Initializes the Nest class.
 
         Args:
             osm_data (List[dict]): The data from the Overpass API.
+            area_names (List[str]): The names of the areas.
         """
         self.osm_data = osm_data
+        self.area_names = area_names
         self.nodes, self.ways, self.relations = self._get_osm_elements()
         self.nodes_dict = {node.id: node for node in self.nodes}
         self.ways_dict = {way.id: way for way in self.ways}
@@ -49,18 +63,18 @@ class Nest:
         logging.info('Processing OSM elements...')
         start = time.time()
         nodes, ways, relations = [], [], []
-        for area in self.osm_data:
+        for area, area_name in zip(self.osm_data, self.area_names):
             for element in area['elements']:
                 if element['type'] == 'node':
                     node = Node(**element)
                     if node not in nodes:
                         nodes.append(node)
                 elif element['type'] == 'relation':
-                    relation = Relation(**element)
+                    relation = Relation(**element, area_name=area_name)
                     if relation not in relations:
                         relations.append(relation)
                 elif element['type'] == 'way':
-                    way = Way(**element)
+                    way = Way(**element, area_name=area_name)
                     if way not in ways:
                         ways.append(way)
         end = time.time()
@@ -89,6 +103,7 @@ class Nest:
                     type=0,
                     name=way.name,
                     m2=way.area,
+                    area_name=way.area_name,
                     polygon_wkb=way.polygon
                 )
             )
@@ -116,6 +131,7 @@ class Nest:
                     type=0,
                     name=relation.name,
                     m2=relation.area,
+                    area_name=relation.area_name,
                     polygon_wkb=relation.multipolygon
                 )
             )

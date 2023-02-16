@@ -70,7 +70,7 @@ class NestCollector:
         osm_data = self.overpass.get_osm_data()
 
         # Get the nests
-        nest = Nest(osm_data)
+        nest = Nest(osm_data=osm_data, area_names=self.overpass.area_names)
         nests = nest.get_nests()
 
         # Save the nests to the database

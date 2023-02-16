@@ -18,7 +18,7 @@ class Overpass:
 
     Attributes:
         url (str): The URL of the Overpass API.
-        names (List[str]): The names of the areas.
+        area_names (List[str]): The names of the areas.
         polygons (List[shapely.geometry.Polygon]): The polygons to query.
         bboxes (List[str]): The bounding boxes to query.
     """
@@ -31,7 +31,7 @@ class Overpass:
             areas_path (str): The path to the areas GeoJSON file.
         """
         self.url = 'https://overpass.kumi.systems/api/interpreter'
-        self.names = self._get_names(areas_path)
+        self.area_names = self._get_names(areas_path)
         self.polygons = self._load_polygons(areas_path)
         self.bboxes = self._get_bboxes()
 
@@ -169,7 +169,7 @@ class Overpass:
 
         # Query the OpenStreetMap data for each bounding box
         osm_data = []
-        for name, bbox in zip(self.names, self.bboxes):
+        for name, bbox in zip(self.area_names, self.bboxes):
             # Skip if the data already exists
             if os.path.exists(f'data/{name}.json'):
                 logging.info(f'OpenStreetMap data for {name} already exists.')

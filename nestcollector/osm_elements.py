@@ -70,10 +70,18 @@ class Way:
         tags (Optional[dict]): The tags of the element.
         name (Optional[str]): The name of the way.
         polygon (Optional[Polygon]): The polygon of the way.
-        area (Optional[float]): The area of the way.
+        area (Optional[float]): The area in m2 of the way.
+        area_name (Optional[str]): The name of the area the way belongs.
     """
 
-    def __init__(self, type: str, id: int, nodes: List[int], tags: Optional[dict] = None) -> None:
+    def __init__(
+            self,
+            type: str,
+            id: int,
+            nodes: List[int],
+            tags: Optional[dict] = None,
+            area_name: Optional[str] = None
+        ) -> None:
         """
         Initializes the Way class.
 
@@ -82,6 +90,7 @@ class Way:
             id (int): The ID of the element.
             nodes (List[int]): The nodes of the way.
             tags (Optional[dict]): The tags of the element.
+            area_name (Optional[str]): The name of the area the way belongs.
         """
         self.type = type
         self.id = id
@@ -90,14 +99,15 @@ class Way:
         self.name = tags['name'] if tags and 'name' in tags else None
         self.polygon = None
         self._area = None
+        self.area_name = area_name
 
     @property
     def area(self) -> float:
         """
-        Returns the area of the way.
+        Returns the area in m2 of the way.
 
         Returns:
-            float: The area of the way.
+            float: The area in m2 of the way.
         """
         if self.polygon is None:
             self.polygon = self.build_polygon()
@@ -156,10 +166,18 @@ class Relation:
         tags (Optional[dict]): The tags of the element.
         name (Optional[str]): The name of the relation.
         multipolygon (Optional[MultiPolygon]): The multipolygon of the relation.
-        area (Optional[float]): The area of the relation.
+        area (Optional[float]): The area in m2 of the relation.
+        area_name (Optional[str]): The name of the area the relation belongs.
     """
 
-    def __init__(self, type: str, id: int, members: List[dict], tags: Optional[dict] = None) -> None:
+    def __init__(
+            self,
+            type: str,
+            id: int,
+            members: List[dict],
+            tags: Optional[dict] = None,
+            area_name: Optional[str] = None
+        ) -> None:
         """
         Initializes the Relation class.
 
@@ -168,6 +186,7 @@ class Relation:
             id (int): The ID of the element.
             members (List[dict]): The members of the relation.
             tags (Optional[dict]): The tags of the element.
+            area_name (Optional[str]): The name of the area the relation belongs.
         """
         self.type = type
         self.id = id
@@ -176,14 +195,15 @@ class Relation:
         self.name = tags['name'] if tags and 'name' in tags else None
         self.multipolygon = None
         self._area = None
+        self.area_name = area_name
 
     @property
     def area(self) -> float:
         """
-        Returns the area of the way.
+        Returns the area in m2 of the way.
 
         Returns:
-            float: The area of the way.
+            float: The area in m2 of the way.
         """
         if self.multipolygon is None:
             self.multipolygon = self.build_multipolygon()
