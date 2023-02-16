@@ -2,7 +2,9 @@
 Module containing the OSMElements class, which is used to parse OSM elements from the Overpass API.
 """
 
+from pyproj import Geod
 from shapely.geometry import MultiPolygon, Polygon
+from shapely.ops import orient
 from typing import List, Mapping, Optional
 
 
@@ -68,6 +70,7 @@ class Way:
         tags (Optional[dict]): The tags of the element.
         name (Optional[str]): The name of the way.
         polygon (Optional[Polygon]): The polygon of the way.
+        area (Optional[float]): The area of the way.
     """
 
     def __init__(self, type: str, id: int, nodes: List[int], tags: Optional[dict] = None) -> None:
@@ -86,6 +89,22 @@ class Way:
         self.tags = tags
         self.name = tags['name'] if tags and 'name' in tags else None
         self.polygon = None
+        self._area = None
+
+    @property
+    def area(self) -> float:
+        """
+        Returns the area of the way.
+
+        Returns:
+            float: The area of the way.
+        """
+        if self.polygon is None:
+            self.polygon = self.build_polygon()
+        if self._area is None:
+            geod = Geod(ellps='WGS84')
+            self._area = geod.geometry_area_perimeter(self.polygon)[0]
+        return self._area
 
     def build_polygon(self, nodes: Mapping[int, Node]) -> Polygon:
         """
@@ -98,6 +117,7 @@ class Way:
             Polygon: The polygon of the way.
         """
         polygon = Polygon([(nodes[node].lat, nodes[node].lon) for node in self.nodes])
+        polygon = orient(polygon) # Orient the polygon to compute the m2 area
         return polygon
 
     def __eq__(self, other: 'Way') -> bool:
@@ -133,6 +153,7 @@ class Relation:
         tags (Optional[dict]): The tags of the element.
         name (Optional[str]): The name of the relation.
         multipolygon (Optional[MultiPolygon]): The multipolygon of the relation.
+        area (Optional[float]): The area of the relation.
     """
 
     def __init__(self, type: str, id: int, members: List[dict], tags: Optional[dict] = None) -> None:
@@ -151,6 +172,22 @@ class Relation:
         self.tags = tags
         self.name = tags['name'] if tags and 'name' in tags else None
         self.multipolygon = None
+        self._area = None
+
+    @property
+    def area(self) -> float:
+        """
+        Returns the area of the way.
+
+        Returns:
+            float: The area of the way.
+        """
+        if self.multipolygon is None:
+            self.multipolygon = self.build_multipolygon()
+        if self._area is None:
+            geod = Geod(ellps='WGS84')
+            self._area = geod.geometry_area_perimeter(self.multipolygon)[0]
+        return self._area
 
     def build_multipolygon(self, ways: Mapping[int, Way]) -> MultiPolygon:
         """
@@ -170,6 +207,7 @@ class Relation:
                     way.polygon = way.build_polygon(ways)
                 polygons.append(way.polygon)
         multipolygon = MultiPolygon(polygons)
+        multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
 
     def __eq__(self, other: 'Relation') -> bool:

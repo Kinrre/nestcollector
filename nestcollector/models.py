@@ -87,6 +87,7 @@ class Nest(Base):
             polygon_path: str,
             type: int,
             name: str,
+            m2: float,
             polygon_wkb: str,
         ) -> None:
         """
@@ -100,6 +101,7 @@ class Nest(Base):
             polygon_path (str): The path of the polygon.
             type (int): The type of the nest (Unknown).
             name (str): The name of the nest.
+            m2 (float): The area of the nest in m2.
             polygon_wkb (str): The WKB representation of the polygon.
         """
         self.nest_id = nest_id
@@ -109,4 +111,5 @@ class Nest(Base):
         self.polygon_path = polygon_path
         self.type = type
         self.name = name
+        self.m2 = m2
         self.polygon_wkb = polygon_wkb

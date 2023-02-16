@@ -85,6 +85,7 @@ class Nest:
                     polygon_path='',
                     type=0,
                     name=way.name,
+                    m2=way.area,
                     polygon_wkb=way.polygon
                 )
             )
@@ -108,6 +109,7 @@ class Nest:
                     polygon_path='',
                     type=0,
                     name=relation.name,
+                    m2=relation.area,
                     polygon_wkb=relation.multipolygon
                 )
             )
