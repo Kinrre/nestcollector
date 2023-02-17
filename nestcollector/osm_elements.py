@@ -49,6 +49,15 @@ class Node:
         """
         return isinstance(other, Node) and self.id == other.id
 
+    def __hash__(self) -> int:
+        """
+        Returns the hash of the node.
+
+        Returns:
+            int: The hash of the node.
+        """
+        return hash(self.id)
+
     def __str__(self) -> str:
         """
         Returns a string representation of the node.
@@ -144,6 +153,15 @@ class Way:
             bool: True if the ways are equal, False otherwise.
         """
         return isinstance(other, Way) and self.id == other.id
+
+    def __hash__(self) -> int:
+        """
+        Returns the hash of the way.
+
+        Returns:
+            int: The hash of the way.
+        """
+        return hash(self.id)
 
     def __str__(self) -> str:
         """
@@ -245,6 +263,15 @@ class Relation:
             other (Relation): The other relation.
         """
         return isinstance(other, Relation) and self.id == other.id
+
+    def __hash__(self) -> int:
+        """
+        Returns the hash of the relation.
+
+        Returns:
+            int: The hash of the relation.
+        """
+        return hash(self.id)
 
     def __str__(self) -> str:
         """

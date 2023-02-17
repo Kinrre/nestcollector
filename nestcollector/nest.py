@@ -8,7 +8,7 @@ import time
 from .models import Nest as NestModel
 from .osm_elements import Node, Relation, Way
 
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 # Polygon types
 POLYGON = 0
@@ -53,30 +53,27 @@ class Nest:
         for relation in self.relations:
             relation.multipolygon = relation.build_multipolygon(self.ways_dict)
 
-    def _get_osm_elements(self) -> Tuple[List[Node], List[Way], List[Relation]]:
+    def _get_osm_elements(self) -> Tuple[Set[Node], Set[Way], Set[Relation]]:
         """
         Gets the OSM elements from the Overpass API data.
 
         Returns:
-            Tuple[List[Node], List[Way], List[Relation]]: The nodes, ways, and relations.
+            Tuple[Set[Node], Set[Way], Set[Relation]]: The nodes, ways, and relations.
         """
         logging.info('Processing OSM elements...')
         start = time.time()
-        nodes, ways, relations = [], [], []
+        nodes, ways, relations = set(), set(), set()
         for area, area_name in zip(self.osm_data, self.area_names):
             for element in area['elements']:
                 if element['type'] == 'node':
                     node = Node(**element)
-                    if node not in nodes:
-                        nodes.append(node)
+                    nodes.add(node)
                 elif element['type'] == 'relation':
                     relation = Relation(**element, area_name=area_name)
-                    if relation not in relations:
-                        relations.append(relation)
+                    relations.add(relation)
                 elif element['type'] == 'way':
                     way = Way(**element, area_name=area_name)
-                    if way not in ways:
-                        ways.append(way)
+                    ways.add(way)
         end = time.time()
         logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {end - start:.2f} seconds.')
         return nodes, ways, relations
