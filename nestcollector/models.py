@@ -59,7 +59,7 @@ class Nest(Base):
         Index('CoordsIndex', 'lat', 'lon'),
     )
 
-    nest_id = Column(BIGINT(20), primary_key=True)
+    nest_id = Column(BIGINT(20), primary_key=True, autoincrement=False)
     lat = Column(Float(18, True), nullable=False)
     lon = Column(Float(18, True), nullable=False)
     name = Column(String(250), nullable=False, server_default=text('"unknown"'))
