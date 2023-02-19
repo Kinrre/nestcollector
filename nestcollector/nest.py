@@ -10,10 +10,6 @@ from .osm_elements import Node, Relation, Way
 
 from typing import List, Set, Tuple
 
-# Polygon types
-POLYGON = 0
-MULTIPOLYGON = 1
-
 
 class Nest:
     """
@@ -22,9 +18,9 @@ class Nest:
     Attributes:
         osm_data (List[dict]): The data from the Overpass API.
         area_names (List[str]): The names of the areas.
-        nodes (List[Node]): The nodes from the Overpass API data.
-        ways (List[Way]): The ways from the Overpass API data.
-        relations (List[Relation]): The relations from the Overpass API data.
+        nodes (Set[Node]): The nodes from the Overpass API data.
+        ways (Set[Way]): The ways from the Overpass API data.
+        relations (Set[Relation]): The relations from the Overpass API data.
         nodes_dict (Dict[int, Node]): The nodes from the Overpass API data as a dictionary.
         ways_dict (Dict[int, Way]): The ways from the Overpass API data as a dictionary.
     """
@@ -95,13 +91,10 @@ class Nest:
                     nest_id=way.id,
                     lat=way.polygon.centroid.y,
                     lon=way.polygon.centroid.x,
-                    polygon_type=POLYGON,
-                    polygon_path='',
-                    type=0,
-                    name=way.name,
-                    m2=way.area,
+                    polygon=way.polygon,
                     area_name=way.area_name,
-                    polygon=way.polygon
+                    spawnpoints=None,
+                    m2=way.area
                 )
             )
         return nests
@@ -121,15 +114,12 @@ class Nest:
             nests.append(
                 NestModel(
                     nest_id=relation.id,
-                    lat=relation.multipolygon.centroid.x,
-                    lon=relation.multipolygon.centroid.y,
-                    polygon_type=MULTIPOLYGON,
-                    polygon_path='',
-                    type=0,
-                    name=relation.name,
-                    m2=relation.area,
+                    lat=relation.multipolygon.centroid.y,
+                    lon=relation.multipolygon.centroid.x,
+                    polygon=relation.multipolygon,
                     area_name=relation.area_name,
-                    polygon=relation.multipolygon
+                    spawnpoints=None,
+                    m2=relation.area
                 )
             )
         return nests
