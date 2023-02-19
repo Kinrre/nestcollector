@@ -6,7 +6,7 @@ from sqlalchemy import Column, Float, Index, String, func, text
 from sqlalchemy.types import UserDefinedType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import ColumnElement
-from sqlalchemy.dialects.mysql import BIGINT, DECIMAL, LONGTEXT, INTEGER, SMALLINT, TINYINT
+from sqlalchemy.dialects.mysql import BIGINT, DECIMAL, INTEGER, SMALLINT, TINYINT
 
 Base = declarative_base()
 
@@ -62,12 +62,9 @@ class Nest(Base):
     nest_id = Column(BIGINT(20), primary_key=True)
     lat = Column(Float(18, True), nullable=False)
     lon = Column(Float(18, True), nullable=False)
-    name = Column(String(250), nullable=False, server_default=text('"unknown"'))
+    name = Column(String(250), nullable=False, server_default=text('unknown'))
     polygon = Column(Geometry, nullable=False)
     area_name = Column(String(250))
-#    polygon_type = Column(TINYINT(1), nullable=False)
-#    polygon_path = Column(LONGTEXT, nullable=False)
-#    type = Column(TINYINT(1), nullable=False, server_default=text('0'))
     spawnpoints = Column(TINYINT(4), server_default=text('0'))
     m2 = Column(DECIMAL(10, 1), server_default=text('0.0'))
     pokemon_id = Column(INTEGER(11))
@@ -76,20 +73,16 @@ class Nest(Base):
     pokemon_ratio = Column(Float(asdecimal=True), server_default=text('0'))
     pokemon_count = Column(Float(asdecimal=True), server_default=text('0'))
     updated = Column(INTEGER(10), index=True)
-#    nest_submitted_by = Column(String(200))
 
     def __init__(
             self,
             nest_id: int,
             lat: float,
             lon: float,
-            polygon_type: int,
-            polygon_path: str,
-            type: int,
-            name: str,
-            m2: float,
+            polygon: Geometry,
             area_name: str,
-            polygon: str,
+            spawnpoints: int,
+            m2: float
         ) -> None:
         """
         Initializes a new nest.
@@ -98,21 +91,15 @@ class Nest(Base):
             nest_id (int): The ID of the nest.
             lat (float): The latitude of the nest.
             lon (float): The longitude of the nest.
-#            polygon_type (int): The type of the polygon (0 Polygon and 1 MultiPolygon).
-#            polygon_path (str): The path of the polygon.
-#            type (int): The type of the nest (Unknown).
-            name (str): The name of the nest.
-            m2 (float): The area of the nest in m2.
+            polygon (Geometry): The polygon of the nest.
             area_name (str): The name of the area.
-            polygon (str): The WKB representation of the polygon.
+            spawnpoints (int): The number of spawnpoints in the nest.
+            m2 (float): The area of the nest in square meters.
         """
         self.nest_id = nest_id
         self.lat = lat
         self.lon = lon
-        self.polygon_type = polygon_type
-        self.polygon_path = polygon_path
-        self.type = type
-        self.name = name
-        self.m2 = m2
-        self.area_name = area_name
         self.polygon = polygon
+        self.area_name = area_name
+        self.spawnpoints = spawnpoints
+        self.m2 = m2
