@@ -7,7 +7,6 @@ import time
 
 from .models import Base, Nest
 
-from shapely.geometry import Polygon
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from typing import List
@@ -57,14 +56,15 @@ class Database:
 
     def save_nests(self, nests: List[Nest]) -> None:
         """
-        Saves the nests to the database.
+        Saves the nests to the database deleting all previous nests.
 
         Args:
             nests (List[Nest]): The nests to save.
         """
+        self.db.query(Nest).delete()
+        logging.info('Deleted all nests from database.')
         logging.info(f'Saving {len(nests)} nests to database...')
         start = time.time()
-        self.db.query(Nest).delete()
         self.db.add_all(nests)
         self.db.commit()
         end = time.time()

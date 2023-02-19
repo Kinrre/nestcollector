@@ -47,10 +47,14 @@ class Nest:
         """
         Builds the polygons of the ways and relations.
         """
+        logging.info('Building polygons...')
+        start = time.time()
         for way in self.ways:
             way.polygon = way.build_polygon(self.nodes_dict)
         for relation in self.relations:
             relation.multipolygon = relation.build_multipolygon(self.ways_dict)
+        end = time.time()
+        logging.info(f'Polygons built in {end - start:.2f} seconds.')
 
     def _get_osm_elements(self) -> Tuple[Set[Node], Set[Way], Set[Relation]]:
         """
@@ -85,12 +89,16 @@ class Nest:
             List[NestModel]: The nests.
         """
         nests = []
+        invalid_nests = 0
+        small_nests = 0
         for way in self.ways:
             # Skip ways that don't have a polygon
             if way.polygon is None:
+                invalid_nests += 1
                 continue
             # Skip ways that are too small
             if way.area < self.minimum_m2:
+                small_nests += 1
                 continue
             nests.append(
                 NestModel(
@@ -103,7 +111,7 @@ class Nest:
                     m2=way.area
                 )
             )
-        return nests
+        return nests, invalid_nests, small_nests
 
     def _get_nests_relations(self) -> List[NestModel]:
         """
@@ -113,12 +121,16 @@ class Nest:
             List[NestModel]: The nests.
         """
         nests = []
+        invalid_nests = 0
+        small_nests = 0
         for relation in self.relations:
             # Skip relations that don't have a multipolygon
             if relation.multipolygon is None:
+                invalid_nests += 1
                 continue
             # Skip relations that are too small
             if relation.area < self.minimum_m2:
+                small_nests += 1
                 continue
             nests.append(
                 NestModel(
@@ -131,7 +143,7 @@ class Nest:
                     m2=relation.area
                 )
             )
-        return nests
+        return nests, invalid_nests, small_nests
     
     def get_nests(self) -> List[NestModel]:
         """
@@ -140,6 +152,13 @@ class Nest:
         Returns:
             List[NestModel]: The nests.
         """
-        nests = self._get_nests_ways()
-        nests.extend(self._get_nests_relations())
+        logging.info(f'Filtering nests...')
+        start = time.time()
+        nests_ways, invalid_nests_ways, small_nests_ways = self._get_nests_ways()
+        nests_relations, invalid_nests_relations, small_nests_relations = self._get_nests_relations()
+        nests = nests_ways + nests_relations
+        invalid_nests = invalid_nests_ways + invalid_nests_relations
+        small_nests = small_nests_ways + small_nests_relations
+        end = time.time()
+        logging.info(f'Filtered {invalid_nests} invalid nests and {small_nests} small nests in {end - start:.2f} seconds.')
         return nests
