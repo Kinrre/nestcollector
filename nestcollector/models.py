@@ -63,7 +63,7 @@ class Nest(Base):
     lat = Column(Float(18, True), nullable=False)
     lon = Column(Float(18, True), nullable=False)
     name = Column(String(250), nullable=False, server_default=text('"unknown"'))
-    polygon_wkb = Column(Geometry, nullable=False)
+    polygon = Column(Geometry, nullable=False)
     area_name = Column(String(250))
 #    polygon_type = Column(TINYINT(1), nullable=False)
 #    polygon_path = Column(LONGTEXT, nullable=False)
@@ -89,7 +89,7 @@ class Nest(Base):
             name: str,
             m2: float,
             area_name: str,
-            polygon_wkb: str,
+            polygon: str,
         ) -> None:
         """
         Initializes a new nest.
@@ -98,13 +98,13 @@ class Nest(Base):
             nest_id (int): The ID of the nest.
             lat (float): The latitude of the nest.
             lon (float): The longitude of the nest.
-            polygon_type (int): The type of the polygon (0 Polygon and 1 MultiPolygon).
-            polygon_path (str): The path of the polygon.
-            type (int): The type of the nest (Unknown).
+#            polygon_type (int): The type of the polygon (0 Polygon and 1 MultiPolygon).
+#            polygon_path (str): The path of the polygon.
+#            type (int): The type of the nest (Unknown).
             name (str): The name of the nest.
             m2 (float): The area of the nest in m2.
             area_name (str): The name of the area.
-            polygon_wkb (str): The WKB representation of the polygon.
+            polygon (str): The WKB representation of the polygon.
         """
         self.nest_id = nest_id
         self.lat = lat
@@ -115,4 +115,4 @@ class Nest(Base):
         self.name = name
         self.m2 = m2
         self.area_name = area_name
-        self.polygon_wkb = polygon_wkb
+        self.polygon = polygon

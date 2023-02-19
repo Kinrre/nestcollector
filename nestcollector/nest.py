@@ -101,7 +101,7 @@ class Nest:
                     name=way.name,
                     m2=way.area,
                     area_name=way.area_name,
-                    polygon_wkb=way.polygon
+                    polygon=way.polygon
                 )
             )
         return nests
@@ -129,7 +129,7 @@ class Nest:
                     name=relation.name,
                     m2=relation.area,
                     area_name=relation.area_name,
-                    polygon_wkb=relation.multipolygon
+                    polygon=relation.multipolygon
                 )
             )
         return nests
