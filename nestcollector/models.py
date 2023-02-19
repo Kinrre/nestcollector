@@ -70,13 +70,13 @@ class Nest(Base):
 #    type = Column(TINYINT(1), nullable=False, server_default=text('0'))
     spawnpoints = Column(TINYINT(4), server_default=text('0'))
     m2 = Column(DECIMAL(10, 1), server_default=text('0.0'))
-    updated = Column(INTEGER(10), index=True)
     pokemon_id = Column(INTEGER(11))
     pokemon_form = Column(SMALLINT(6))
     pokemon_avg = Column(Float(asdecimal=True))
     pokemon_ratio = Column(Float(asdecimal=True), server_default=text('0'))
     pokemon_count = Column(Float(asdecimal=True), server_default=text('0'))
-    nest_submitted_by = Column(String(200))
+    updated = Column(INTEGER(10), index=True)
+#    nest_submitted_by = Column(String(200))
 
     def __init__(
             self,
