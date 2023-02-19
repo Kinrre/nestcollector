@@ -138,7 +138,7 @@ class Way:
         # Check if the way has at least 3 nodes
         if len(self.nodes) < 3:
             return None
-        polygon = Polygon([(nodes[node].lat, nodes[node].lon) for node in self.nodes])
+        polygon = Polygon([(nodes[node].lon, nodes[node].lat) for node in self.nodes])
         polygon = orient(polygon) # Orient the polygon to compute the m2 area
         return polygon
 

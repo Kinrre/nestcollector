@@ -93,8 +93,8 @@ class Nest:
             nests.append(
                 NestModel(
                     nest_id=way.id,
-                    lat=way.polygon.centroid.x,
-                    lon=way.polygon.centroid.y,
+                    lat=way.polygon.centroid.y,
+                    lon=way.polygon.centroid.x,
                     polygon_type=POLYGON,
                     polygon_path='',
                     type=0,
