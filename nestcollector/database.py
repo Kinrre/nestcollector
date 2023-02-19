@@ -6,10 +6,11 @@ import logging
 import time
 
 from .models import Base, Nest
-from typing import List
 
+from shapely.geometry import Polygon
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from typing import List
 
 # MariaDB connection URI
 SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4'
@@ -63,8 +64,8 @@ class Database:
         """
         logging.info(f'Saving {len(nests)} nests to database...')
         start = time.time()
-        for nest in nests:
-            self.db.merge(nest)
+        self.db.query(Nest).delete()
+        self.db.add_all(nests)
         self.db.commit()
         end = time.time()
         logging.info(f'Saved nests to database in {end - start:.2f} seconds.')
