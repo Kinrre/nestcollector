@@ -70,11 +70,33 @@ class NestCollector:
         osm_data = self.overpass.get_osm_data()
 
         # Get the nests
-        nest = Nest(osm_data=osm_data, area_names=self.overpass.area_names)
+        nest = Nest(
+            osm_data=osm_data,
+            area_names=self.overpass.area_names,
+            minimum_m2=self.get_minimum_m2()
+        )
         nests = nest.get_nests()
 
         # Save the nests to the database
         self.db.save_nests(nests)
+
+    def get_minimum_spawnpoints(self) -> int:
+        """
+        Returns the minimum spawnpoints of a nest.
+
+        Returns:
+            int: The minimum spawnpoints of a nest.
+        """
+        return int(self.config['NESTS']['MINIMUM_SPAWNPOINTS'])
+
+    def get_minimum_m2(self) -> float:
+        """
+        Returns the minimum m2 of a nest.
+
+        Returns:
+            float: The minimum m2 of a nest.
+        """
+        return float(self.config['NESTS']['MINIMUM_M2'])
 
     def get_db_host(self) -> str:
         """

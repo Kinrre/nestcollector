@@ -23,18 +23,21 @@ class Nest:
         relations (Set[Relation]): The relations from the Overpass API data.
         nodes_dict (Dict[int, Node]): The nodes from the Overpass API data as a dictionary.
         ways_dict (Dict[int, Way]): The ways from the Overpass API data as a dictionary.
+        minimum_m2 (float): The minimum area in m2 to add a nest into the database.
     """
 
-    def __init__(self, osm_data: List[dict], area_names: List[str]) -> None:
+    def __init__(self, osm_data: List[dict], area_names: List[str], minimum_m2: float) -> None:
         """
         Initializes the Nest class.
 
         Args:
             osm_data (List[dict]): The data from the Overpass API.
             area_names (List[str]): The names of the areas.
+            minimum_m2 (float): The minimum area in m2 to add a nest into the database.
         """
         self.osm_data = osm_data
         self.area_names = area_names
+        self.minimum_m2 = minimum_m2
         self.nodes, self.ways, self.relations = self._get_osm_elements()
         self.nodes_dict = {node.id: node for node in self.nodes}
         self.ways_dict = {way.id: way for way in self.ways}
@@ -86,6 +89,9 @@ class Nest:
             # Skip ways that don't have a polygon
             if way.polygon is None:
                 continue
+            # Skip ways that are too small
+            if way.area < self.minimum_m2:
+                continue
             nests.append(
                 NestModel(
                     nest_id=way.id,
@@ -110,6 +116,9 @@ class Nest:
         for relation in self.relations:
             # Skip relations that don't have a multipolygon
             if relation.multipolygon is None:
+                continue
+            # Skip relations that are too small
+            if relation.area < self.minimum_m2:
                 continue
             nests.append(
                 NestModel(
