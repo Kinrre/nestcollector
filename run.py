@@ -86,6 +86,10 @@ class NestCollector:
         # Calculate the spawnpoints of the nests
         self.db.call_spawnpoints_procedure()
 
+        # Count the final active nests
+        active_nests = self.db.count_active_nests()
+        logging.info(f'Final active nests: {active_nests}')
+
     def get_minimum_spawnpoints(self) -> int:
         """
         Returns the minimum spawnpoints of a nest.

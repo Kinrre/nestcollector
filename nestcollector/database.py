@@ -83,6 +83,16 @@ class Database:
             procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
         self.db.execute(text(procedure))
 
+    def count_active_nests(self) -> int:
+        """
+        Counts the active nests in the database.
+
+        Returns:
+            int: The number of active nests in the database.
+        """
+        count = self.db.query(Nest).filter(Nest.active == True).count()
+        return count
+
     def save_nests(self, nests: List[Nest]) -> None:
         """
         Saves the nests to the database deleting all previous nests.
