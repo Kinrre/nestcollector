@@ -1,9 +1,9 @@
 [NESTS]
 # Minimum spawnpoints to include the possible nest into the geojson file
-minimum_spawnpoints = 2
+minimum_spawnpoints = 6
 
 # Minimum m2 to include the possible nest into the geojson file
-minimum_m2 = 30
+minimum_m2 = 100
 
 [DB]
 # Database settings to store the nests
