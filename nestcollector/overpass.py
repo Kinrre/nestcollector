@@ -2,14 +2,14 @@
 Module containing the Overpass class, which is used to query the OpenStreetMap data.
 """
 
-from shapely import geometry
-from typing import List
-
 import logging
 import json
 import os
 import requests
 import time
+
+from shapely import geometry
+from typing import List
 
 
 class Overpass:
@@ -102,47 +102,47 @@ class Overpass:
         [date:"{date}"]
         [timeout:100000];
         (
-            way[leisure=park](poly:"{cords}");
-            way[landuse=recreation_ground](poly:"{cords}");
-            way[leisure=recreation_ground](poly:"{cords}");
-            way[leisure=pitch](poly:"{cords}");
-            way[leisure=garden](poly:"{cords}");
-            way[leisure=golf_course](poly:"{cords}");
-            way[leisure=playground](poly:"{cords}");
-            way[landuse=meadow](poly:"{cords}");
-            way[landuse=grass](poly:"{cords}");
-            way[landuse=greenfield](poly:"{cords}");
-            way[natural=scrub](poly:"{cords}");
-            way[natural=heath](poly:"{cords}");
-            way[natural=grassland](poly:"{cords}");
-            way[landuse=farmyard](poly:"{cords}");
-            way[landuse=vineyard](poly:"{cords}");
-            way[landuse=farmland](poly:"{cords}");
-            way[landuse=orchard](poly:"{cords}");
-            way[natural=plateau](poly:"{cords}");
-            way[natural=moor](poly:"{cords}");
-            way["leisure"="nature_reserve"](poly:"{cords}");
+            way[leisure=park](poly:"{coords}");
+            way[landuse=recreation_ground](poly:"{coords}");
+            way[leisure=recreation_ground](poly:"{coords}");
+            way[leisure=pitch](poly:"{coords}");
+            way[leisure=garden](poly:"{coords}");
+            way[leisure=golf_course](poly:"{coords}");
+            way[leisure=playground](poly:"{coords}");
+            way[landuse=meadow](poly:"{coords}");
+            way[landuse=grass](poly:"{coords}");
+            way[landuse=greenfield](poly:"{coords}");
+            way[natural=scrub](poly:"{coords}");
+            way[natural=heath](poly:"{coords}");
+            way[natural=grassland](poly:"{coords}");
+            way[landuse=farmyard](poly:"{coords}");
+            way[landuse=vineyard](poly:"{coords}");
+            way[landuse=farmland](poly:"{coords}");
+            way[landuse=orchard](poly:"{coords}");
+            way[natural=plateau](poly:"{coords}");
+            way[natural=moor](poly:"{coords}");
+            way["leisure"="nature_reserve"](poly:"{coords}");
             
-            rel[leisure=park](poly:"{cords}");
-            rel[landuse=recreation_ground](poly:"{cords}");
-            rel[leisure=recreation_ground](poly:"{cords}");
-            rel[leisure=pitch](poly:"{cords}");
-            rel[leisure=garden](poly:"{cords}");
-            rel[leisure=golf_course](poly:"{cords}");
-            rel[leisure=playground](poly:"{cords}");
-            rel[landuse=meadow](poly:"{cords}");
-            rel[landuse=grass](poly:"{cords}");
-            rel[landuse=greenfield](poly:"{cords}");
-            rel[natural=scrub](poly:"{cords}");
-            rel[natural=heath](poly:"{cords}");
-            rel[natural=grassland](poly:"{cords}");
-            rel[landuse=farmyard](poly:"{cords}");
-            rel[landuse=vineyard](poly:"{cords}");
-            rel[landuse=farmland](poly:"{cords}");
-            rel[landuse=orchard](poly:"{cords}");
-            rel[natural=plateau](poly:"{cords}");
-            rel[natural=moor](poly:"{cords}");
-            rel["leisure"="nature_reserve"](poly:"{cords}");
+            rel[leisure=park](poly:"{coords}");
+            rel[landuse=recreation_ground](poly:"{coords}");
+            rel[leisure=recreation_ground](poly:"{coords}");
+            rel[leisure=pitch](poly:"{coords}");
+            rel[leisure=garden](poly:"{coords}");
+            rel[leisure=golf_course](poly:"{coords}");
+            rel[leisure=playground](poly:"{coords}");
+            rel[landuse=meadow](poly:"{coords}");
+            rel[landuse=grass](poly:"{coords}");
+            rel[landuse=greenfield](poly:"{coords}");
+            rel[natural=scrub](poly:"{coords}");
+            rel[natural=heath](poly:"{coords}");
+            rel[natural=grassland](poly:"{coords}");
+            rel[landuse=farmyard](poly:"{coords}");
+            rel[landuse=vineyard](poly:"{coords}");
+            rel[landuse=farmland](poly:"{coords}");
+            rel[landuse=orchard](poly:"{coords}");
+            rel[natural=plateau](poly:"{coords}");
+            rel[natural=moor](poly:"{coords}");
+            rel["leisure"="nature_reserve"](poly:"{coords}");
         );
         out body;
         >;
