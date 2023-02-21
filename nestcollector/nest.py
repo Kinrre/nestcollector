@@ -81,16 +81,17 @@ class Nest:
         logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {end - start:.2f} seconds.')
         return nodes, ways, relations
 
-    def _get_nests_ways(self) -> List[NestModel]:
+    def _get_nests_ways(self) -> Tuple[List[NestModel], int, int, int]:
         """
         Gets the nests from the ways.
 
         Returns:
-            List[NestModel]: The nests.
+            Tuple[List[NestModel], int, int, int]: The nests, the number of invalid small and duplicated nests.
         """
         nests = []
         invalid_nests = 0
         small_nests = 0
+        duplicated_nests = 0
         for way in self.ways:
             # Skip ways that don't have a polygon
             if way.polygon is None:
@@ -99,6 +100,10 @@ class Nest:
             # Skip ways that are too small
             if way.area < self.minimum_m2:
                 small_nests += 1
+                continue
+            # Skip ways that are duplicated in a relation
+            if way.used_in_relation:
+                duplicated_nests += 1
                 continue
             nests.append(
                 NestModel(
@@ -111,14 +116,14 @@ class Nest:
                     m2=way.area
                 )
             )
-        return nests, invalid_nests, small_nests
+        return nests, invalid_nests, small_nests, duplicated_nests
 
-    def _get_nests_relations(self) -> List[NestModel]:
+    def _get_nests_relations(self) -> Tuple[List[NestModel], int, int]:
         """
         Gets the nests from the relations.
 
         Returns:
-            List[NestModel]: The nests.
+            Tuple[List[NestModel], int, int]: The nests, the number of invalid and small nests.
         """
         nests = []
         invalid_nests = 0
@@ -152,13 +157,14 @@ class Nest:
         Returns:
             List[NestModel]: The nests.
         """
-        logging.info(f'Filtering invalid and small nests...')
+        logging.info(f'Filtering nests...')
         start = time.time()
-        nests_ways, invalid_nests_ways, small_nests_ways = self._get_nests_ways()
-        nests_relations, invalid_nests_relations, small_nests_relations = self._get_nests_relations()
+        nests_ways, invalid_ways, small_ways, duplicated_ways = self._get_nests_ways()
+        nests_relations, invalid_relations, small_relations = self._get_nests_relations()
         nests = nests_ways + nests_relations
-        invalid_nests = invalid_nests_ways + invalid_nests_relations
-        small_nests = small_nests_ways + small_nests_relations
+        invalid_nests = invalid_ways + invalid_relations
+        small_nests = small_ways + small_relations
         end = time.time()
-        logging.info(f'Filtered {invalid_nests} invalid nests and {small_nests} small nests in {end - start:.2f} seconds.')
+        logging.info(f'Filtered {invalid_nests} invalid nests, {small_nests} small nests ' \
+                     f'and {duplicated_ways} duplicated nests in {end - start:.2f} seconds.')
         return nests

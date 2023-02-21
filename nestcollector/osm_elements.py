@@ -81,6 +81,7 @@ class Way:
         polygon (Optional[Polygon]): The polygon of the way.
         area (Optional[float]): The area in m2 of the way.
         area_name (Optional[str]): The name of the area the way belongs.
+        used_in_relation (bool): Whether the way is used in a relation.
     """
 
     def __init__(
@@ -109,6 +110,7 @@ class Way:
         self.polygon = None
         self._area = None
         self.area_name = area_name
+        self.used_in_relation = False
 
     @property
     def area(self) -> float:
@@ -244,6 +246,7 @@ class Relation:
         for member in self.members:
             if member['type'] == 'way':
                 way = ways[member['ref']]
+                way.used_in_relation = True
                 if way.polygon is None:
                     polygon = way.build_polygon(ways)
                     # Check if the way is a polygon
