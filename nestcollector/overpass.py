@@ -151,8 +151,18 @@ class Overpass:
         out skel qt;
         """
         query = query.format(date=date, coords=coords)
-        response = requests.post(self.url, data=query)
-        return response.json()
+        valid_response = False
+        osm_data = None
+        # Retry if the response is invalid
+        while not valid_response:
+            response = requests.post(self.url, data=query)
+            if response.status_code == 200:
+                valid_response = True
+                osm_data = response.json()
+            else:
+                logging.warning(f'Invalid response code: {response.status_code}. Retrying in 30 seconds...')
+                time.sleep(30)
+        return osm_data
 
     def get_osm_data(self, date: str = '2019-02-24T00:00:00Z') -> List[dict]:
         """
