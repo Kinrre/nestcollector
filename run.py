@@ -80,6 +80,12 @@ class NestCollector:
         # Save the nests to the database
         self.db.save_nests(nests)
 
+        # Create the stored procedure for counting the spawnpoints in a nest
+        self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
+
+        # Calculate the spawnpoints of the nests
+        self.db.call_spawnpoints_procedure()
+
     def get_minimum_spawnpoints(self) -> int:
         """
         Returns the minimum spawnpoints of a nest.

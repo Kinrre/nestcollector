@@ -152,7 +152,7 @@ class Nest:
         Returns:
             List[NestModel]: The nests.
         """
-        logging.info(f'Filtering nests...')
+        logging.info(f'Filtering invalid and small nests...')
         start = time.time()
         nests_ways, invalid_nests_ways, small_nests_ways = self._get_nests_ways()
         nests_relations, invalid_nests_relations, small_nests_relations = self._get_nests_relations()

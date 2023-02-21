@@ -65,7 +65,7 @@ class Nest(Base):
     name = Column(String(250), nullable=False, server_default=text('"unknown"'))
     polygon = Column(Geometry, nullable=False)
     area_name = Column(String(250))
-    spawnpoints = Column(TINYINT(4), server_default=text('0'))
+    spawnpoints = Column(SMALLINT(unsigned=True), server_default=text('0'))
     m2 = Column(DECIMAL(10, 1), server_default=text('0.0'))
     active = Column(TINYINT(1), server_default=text('0'))
     pokemon_id = Column(INTEGER(11))

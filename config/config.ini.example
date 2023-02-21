@@ -1,7 +1,3 @@
-[DEFAULT]
-# The path to the golbat directory to save the output geojson file
-output_geojson = YOUR_PATH_TO_GOLBAT
-
 [NESTS]
 # Minimum spawnpoints to include the possible nest into the geojson file
 minimum_spawnpoints = 2

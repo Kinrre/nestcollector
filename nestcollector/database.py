@@ -7,12 +7,15 @@ import time
 
 from .models import Base, Nest
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from typing import List
 
 # MariaDB connection URI
 SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4'
+
+# SQL file for creating the stored procedure
+NEST_PROCEDURE = './sql/get_nest_spawnpoints.sql'
 
 
 class Database:
@@ -53,6 +56,31 @@ class Database:
         Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         self.db = SessionLocal()
+
+    def call_spawnpoints_procedure(self) -> None:
+        """
+        Calls the stored procedure for counting the spawnpoints in a nest.
+        """
+        logging.info('Calculating spawnpoints of nests...')
+        start = time.time()
+        self.db.execute(text('CALL get_nest_spawnpoints()'))
+        self.db.commit()
+        end = time.time()
+        logging.info(f'Calculated spawnpoints of nests in {end - start:.2f} seconds.')
+
+    def create_spawnpoints_procedure(self, minimum_spawnpoints: int) -> None:
+        """
+        Creates the stored procedure for counting the spawnpoints in a nest.
+
+        Args:
+            minimum_spawnpoints (int): The minimum spawnpoints of a nest.
+        """
+        logging.info('Creating stored procedure for counting the spawnpoints in a nest...')
+        self.db.execute(text(f'DROP PROCEDURE IF EXISTS get_nest_spawnpoints'))
+        with open(NEST_PROCEDURE, 'r') as file:
+            procedure = file.read()
+            procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
+        self.db.execute(text(procedure))
 
     def save_nests(self, nests: List[Nest]) -> None:
         """
