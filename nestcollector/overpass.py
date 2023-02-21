@@ -8,6 +8,8 @@ import os
 import requests
 import time
 
+from .timing import human_time
+
 from shapely import geometry
 from typing import List
 
@@ -187,10 +189,10 @@ class Overpass:
             with open(f'data/{name}.json', 'w') as f:
                 json.dump(_osm_data, f)
             _end = time.time()
-            logging.info(f'Finished querying OpenStreetMap data for {name} in {_end - _start:.2f} seconds.')
+            logging.info(f'Finished querying OpenStreetMap data for {name} in {human_time(_end - _start)}.')
         
         # Log the end of the process
         end = time.time()
-        logging.info(f'Finished getting OpenStreetMap data in {end - start:.2f} seconds.')
+        logging.info(f'Finished getting OpenStreetMap data in {human_time(end - start)}.')
         
         return osm_data

@@ -7,6 +7,7 @@ import time
 
 from .models import Nest as NestModel
 from .osm_elements import Node, Relation, Way
+from .timing import human_time
 
 from typing import List, Set, Tuple
 
@@ -54,7 +55,7 @@ class Nest:
         for relation in self.relations:
             relation.multipolygon = relation.build_multipolygon(self.ways_dict)
         end = time.time()
-        logging.info(f'Polygons built in {end - start:.2f} seconds.')
+        logging.info(f'Polygons built in {human_time(end - start)}.')
 
     def _get_osm_elements(self) -> Tuple[Set[Node], Set[Way], Set[Relation]]:
         """
@@ -78,7 +79,7 @@ class Nest:
                     way = Way(**element, area_name=area_name)
                     ways.add(way)
         end = time.time()
-        logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {end - start:.2f} seconds.')
+        logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {human_time(end - start)}.')
         return nodes, ways, relations
 
     def _get_nests_ways(self) -> Tuple[List[NestModel], int, int, int]:
@@ -166,5 +167,5 @@ class Nest:
         small_nests = small_ways + small_relations
         end = time.time()
         logging.info(f'Filtered {invalid_nests} invalid nests, {small_nests} small nests ' \
-                     f'and {duplicated_ways} duplicated nests in {end - start:.2f} seconds.')
+                     f'and {duplicated_ways} duplicated nests in {human_time(end - start)}.')
         return nests

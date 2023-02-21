@@ -6,6 +6,7 @@ import logging
 import time
 
 from .models import Base, Nest
+from .timing import human_time
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -66,7 +67,7 @@ class Database:
         self.db.execute(text('CALL get_nest_spawnpoints()'))
         self.db.commit()
         end = time.time()
-        logging.info(f'Calculated and filtering spawnpoints of nests in {end - start:.2f} seconds.')
+        logging.info(f'Calculated and filtering spawnpoints of nests in {human_time(end - start)}.')
 
     def create_spawnpoints_procedure(self, minimum_spawnpoints: int) -> None:
         """
@@ -96,4 +97,4 @@ class Database:
         self.db.add_all(nests)
         self.db.commit()
         end = time.time()
-        logging.info(f'Saved nests to database in {end - start:.2f} seconds.')
+        logging.info(f'Saved nests to database in {human_time(end - start)}.')
