@@ -10,7 +10,7 @@ Collect possible Pokémon Go nests from OSM (Open Street Map) data.
 
 ## Installation
 
-1. Copy the configuration file and fill it with the database settings.
+1. Copy the configuration file and fill it with the corresponding settings.
 
   ```sh
   cp config/config.ini.example config/config.ini
