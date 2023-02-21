@@ -61,12 +61,12 @@ class Database:
         """
         Calls the stored procedure for counting the spawnpoints in a nest.
         """
-        logging.info('Calculating spawnpoints of nests...')
+        logging.info('Calculating and filtering spawnpoints of nests...')
         start = time.time()
         self.db.execute(text('CALL get_nest_spawnpoints()'))
         self.db.commit()
         end = time.time()
-        logging.info(f'Calculated spawnpoints of nests in {end - start:.2f} seconds.')
+        logging.info(f'Calculated and filtering spawnpoints of nests in {end - start:.2f} seconds.')
 
     def create_spawnpoints_procedure(self, minimum_spawnpoints: int) -> None:
         """
