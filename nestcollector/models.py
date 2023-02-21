@@ -67,6 +67,7 @@ class Nest(Base):
     area_name = Column(String(250))
     spawnpoints = Column(TINYINT(4), server_default=text('0'))
     m2 = Column(DECIMAL(10, 1), server_default=text('0.0'))
+    active = Column(TINYINT(1), server_default=text('0'))
     pokemon_id = Column(INTEGER(11))
     pokemon_form = Column(SMALLINT(6))
     pokemon_avg = Column(Float(asdecimal=True))
