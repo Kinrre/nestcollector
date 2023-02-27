@@ -59,7 +59,13 @@ class NestCollector:
             port=self.get_db_port(),
             name=self.get_db_name(),
             user=self.get_db_user(),
-            password=self.get_db_password()
+            password=self.get_db_password(),
+            use_chansey_db=self.get_chansey_use_chansey_db(),
+            chansey_host=self.get_chansey_db_host(),
+            chansey_port=self.get_chansey_db_port(),
+            chansey_name=self.get_chansey_db_name(),
+            chansey_user=self.get_chansey_db_user(),
+            chansey_password=self.get_chansey_db_password()
         )
     
     def run(self) -> None:
@@ -152,6 +158,60 @@ class NestCollector:
             str: The database username password.
         """
         return self.config['DB']['PASSWORD']
+
+    def get_chansey_use_chansey_db(self) -> bool:
+        """
+        Returns if Chansey should be used.
+
+        Returns:
+            bool: If Chansey should be used.
+        """
+        return self.config['CHANSEY']['USE_CHANSEY_DB'].capitalize() == 'True'
+
+    def get_chansey_db_host(self) -> str:
+        """
+        Returns the IP host of the Chansey db.
+
+        Returns:
+            str: The IP host of the Chansey db.
+        """
+        return self.config['CHANSEY']['HOST']
+    
+    def get_chansey_db_port(self) -> str:
+        """
+        Returns the port of the Chansey db.
+
+        Returns:
+            str: The port of the Chansey db.
+        """
+        return self.config['CHANSEY']['PORT']
+
+    def get_chansey_db_name(self) -> str:
+        """
+        Returns the Chansey database name.
+
+        Returns:
+            str: The Chansey database name.
+        """
+        return self.config['CHANSEY']['NAME']
+    
+    def get_chansey_db_user(self) -> str:
+        """
+        Returns the Chansey database username.
+
+        Returns:
+            str: The Chansey database username.
+        """
+        return self.config['CHANSEY']['USER']
+    
+    def get_chansey_db_password(self) -> str:
+        """
+        Returns the Chansey database username password.
+
+        Returns:
+            str: The Chansey database username password.
+        """
+        return self.config['CHANSEY']['PASSWORD']
 
 
 if __name__ == '__main__':

@@ -17,6 +17,7 @@ SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{na
 
 # SQL file for creating the stored procedure
 NEST_PROCEDURE = './sql/get_nest_spawnpoints.sql'
+NEST_CHANSEY_PROCEDURE = './sql/get_nest_spawnpoints_chansey.sql'
 
 
 class Database:
@@ -25,6 +26,9 @@ class Database:
 
     Attributes:
         db (sqlalchemy.orm.session.Session): The database session.
+        use_chansey_db (bool): Whether to use the Chansey database.
+        chansey_name (str): The Chansey database name.
+        chansey_db (sqlalchemy.orm.session.Session): The Chansey database session.
     """
 
     def __init__(
@@ -33,10 +37,39 @@ class Database:
             port: str,
             name: str,
             user: str,
-            password: str
+            password: str,
+            use_chansey_db: bool = False,
+            chansey_host: str = None,
+            chansey_port: str = None,
+            chansey_name: str = None,
+            chansey_user: str = None,
+            chansey_password: str = None
         ) -> None:
         """
         Initializes the NestDatabase class.
+
+        Args:
+            host (str): The database host.
+            port (str): The database port.
+            name (str): The database name.
+            user (str): The database user.
+            password (str): The database password.
+            use_chansey_db (bool): Whether to use the Chansey database.
+            chansey_host (str): The Chansey database host.
+            chansey_port (str): The Chansey database port.
+            chansey_name (str): The Chansey database name.
+            chansey_user (str): The Chansey database user.
+            chansey_password (str): The Chansey database password.
+        """
+        self.db = self._create_session_local(host, port, name, user, password)
+        self.use_chansey_db = use_chansey_db
+        if self.use_chansey_db:
+            self.chansey_name = chansey_name
+            self.chansey_db = self._create_session_local(chansey_host, chansey_port, chansey_name, chansey_user, chansey_password)
+
+    def _create_session_local(self, host: str, port: str, name: str, user: str, password: str) -> None:
+        """
+        Creates the SQLAlchemy session.
 
         Args:
             host (str): The database host.
@@ -54,9 +87,8 @@ class Database:
             password=password
         )
         engine = create_engine(connection_url, pool_pre_ping=True)
-        Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        self.db = SessionLocal()
+        return SessionLocal()
 
     def call_spawnpoints_procedure(self) -> None:
         """
@@ -78,9 +110,14 @@ class Database:
         """
         logging.info('Creating stored procedure for counting the spawnpoints in a nest...')
         self.db.execute(text(f'DROP PROCEDURE IF EXISTS get_nest_spawnpoints'))
-        with open(NEST_PROCEDURE, 'r') as file:
-            procedure = file.read()
-            procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
+        if self.use_chansey_db:
+            with open(NEST_CHANSEY_PROCEDURE, 'r') as file:
+                procedure = file.read()
+                procedure = procedure.format(chansey_db=self.chansey_name, minimum_spawnpoints=minimum_spawnpoints)
+        else:
+            with open(NEST_PROCEDURE, 'r') as file:
+                procedure = file.read()
+                procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
         self.db.execute(text(procedure))
 
     def count_active_nests(self) -> int:
