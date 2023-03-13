@@ -18,7 +18,7 @@ SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{na
 # SQL file for creating the stored procedure
 NEST_PROCEDURE = './sql/get_nest_spawnpoints.sql'
 NEST_CHANSEY_PROCEDURE = './sql/get_nest_spawnpoints_chansey.sql'
-
+NEST_OVERLAP_PROCEDURE = './sql/disable_overlapping_nests.sql'
 
 class Database:
     """
@@ -118,6 +118,31 @@ class Database:
             with open(NEST_PROCEDURE, 'r') as file:
                 procedure = file.read()
                 procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
+        self.db.execute(text(procedure))
+
+    def call_filtering_procedure(self) -> None:
+        """
+        Calls the stored procedure for filtering overlapping nests.
+        """
+        logging.info('Disabling overlapping nests...')
+        start = time.time()
+        self.db.execute(text('CALL nest_filter_overlap()'))
+        self.db.commit()
+        end = time.time()
+        logging.info(f'Disabled overlapping nests {human_time(end - start)}.')
+
+    def create_filtering_procedure(self, maximum_overlap: int) -> None:
+        """
+        Creates the stored procedure for filtering overlapping nests.
+
+        Args:
+            maximum_overlap (int): The maximum allowed overlap between nests.
+        """
+        logging.info('Creating stored procedure for overlapping nest filtering...')
+        self.db.execute(text(f'DROP PROCEDURE IF EXISTS filter_overlap'))
+        with open(NEST_OVERLAP_PROCEDURE, 'r') as file:
+            procedure = file.read()
+            procedure = procedure.format(maximum_overlap=maximum_overlap)
         self.db.execute(text(procedure))
 
     def count_active_nests(self) -> int:

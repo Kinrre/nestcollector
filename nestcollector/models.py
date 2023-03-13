@@ -73,6 +73,7 @@ class Nest(Base):
     pokemon_avg = Column(Float(asdecimal=True))
     pokemon_ratio = Column(Float(asdecimal=True), server_default=text('0'))
     pokemon_count = Column(Float(asdecimal=True), server_default=text('0'))
+    discarded = Column(String(40))
     updated = Column(INTEGER(10), index=True)
 
     def __init__(

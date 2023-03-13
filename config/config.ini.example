@@ -5,6 +5,9 @@ minimum_spawnpoints = 6
 # Minimum m2 to include the possible nest into the geojson file
 minimum_m2 = 100
 
+# Maximum allowed percentage overlap of nests, smallest one will be de-activated
+maximum_overlap = 60
+
 [DB]
 # Database settings to store the nests
 host = 127.0.0.1

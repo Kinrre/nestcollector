@@ -92,6 +92,12 @@ class NestCollector:
         # Calculate the spawnpoints of the nests
         self.db.call_spawnpoints_procedure()
 
+        # Create the stored procedure for filtering overlapping nests
+        self.db.create_filtering_procedure(self.get_maximum_overlap())
+
+        # Filter overlapping nests
+        self.db.call_filtering_procedure()
+
         # Count the final active nests
         active_nests = self.db.count_active_nests()
         logging.info(f'Final active nests: {active_nests}')
@@ -104,6 +110,15 @@ class NestCollector:
             int: The minimum spawnpoints of a nest.
         """
         return int(self.config['NESTS']['MINIMUM_SPAWNPOINTS'])
+
+    def get_maximum_overlap(self) -> int:
+        """
+        Returns the maximum allowed overlap between nests.
+
+        Returns:
+            int: The maximum allowed overlap between nests..
+        """
+        return int(self.config['NESTS']['MAXIMUM_OVERLAP'])
 
     def get_minimum_m2(self) -> float:
         """
