@@ -61,13 +61,13 @@ class Database:
             chansey_user (str): The Chansey database user.
             chansey_password (str): The Chansey database password.
         """
-        self.db = self._create_session_local(host, port, name, user, password)
+        self.db = self._create_session_local(host, port, name, user, password, create_tables=True)
         self.use_chansey_db = use_chansey_db
         if self.use_chansey_db:
             self.chansey_name = chansey_name
             self.chansey_db = self._create_session_local(chansey_host, chansey_port, chansey_name, chansey_user, chansey_password)
 
-    def _create_session_local(self, host: str, port: str, name: str, user: str, password: str) -> None:
+    def _create_session_local(self, host: str, port: str, name: str, user: str, password: str, create_tables: bool = False) -> None:
         """
         Creates the SQLAlchemy session.
 
@@ -77,6 +77,7 @@ class Database:
             name (str): The database name.
             user (str): The database user.
             password (str): The database password.
+            create_tables (bool, Optional): Whether to create the tables if they don't exist. Default to False.
         """
         # Create ORM session and create the models if they don't exist
         connection_url = SQLALCHEMY_DATABASE_URI.format(
@@ -87,6 +88,8 @@ class Database:
             password=password
         )
         engine = create_engine(connection_url, pool_pre_ping=True)
+        if create_tables:
+            Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         return SessionLocal()
 
