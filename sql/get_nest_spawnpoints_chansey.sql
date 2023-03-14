@@ -16,7 +16,7 @@ CREATE TEMPORARY TABLE spawnloc
     FOR nest_record IN nest
     DO
       SET @spawns=(select count(*) from spawnloc WHERE ST_CONTAINS(nest_record.polygon, location));
-      UPDATE nests SET spawnpoints = @spawns, active = (CASE WHEN @spawns > {minimum_spawnpoints} THEN 1 ELSE 0 END), discarded = (CASE WHEN @spawns <= {minimum_spawnpoints} THEN 'spawnpoints' ELSE '' END) WHERE nest_id = nest_record.nest_id;
+      UPDATE nests SET spawnpoints = @spawns, active = (CASE WHEN @spawns >= {minimum_spawnpoints} THEN 1 ELSE 0 END), discarded = (CASE WHEN @spawns < {minimum_spawnpoints} THEN 'spawnpoints' ELSE '' END) WHERE nest_id = nest_record.nest_id;
     END FOR;
   END;
 DROP TEMPORARY TABLE IF EXISTS spawnloc;
