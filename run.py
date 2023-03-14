@@ -67,7 +67,7 @@ class NestCollector:
             chansey_user=self.get_chansey_db_user(),
             chansey_password=self.get_chansey_db_password()
         )
-    
+
     def run(self) -> None:
         """
         Runs the NestCollector.
@@ -85,6 +85,9 @@ class NestCollector:
 
         # Save the nests to the database
         self.db.save_nests(nests)
+
+        # Convert mulitipolygon to polygon
+        self.db.multi_to_poly()
 
         # Create the stored procedure for counting the spawnpoints in a nest
         self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())

@@ -93,6 +93,17 @@ class Database:
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         return SessionLocal()
 
+    def multi_to_poly(self) -> None:
+        """
+        Converts all multipolygon to polygon.
+        """
+        logging.info('Overwriting multipolygon as polygon...')
+        start = time.time()
+        self.db.execute(text('update nests set polygon=ST_CONVEXHULL(polygon) where left(astext(polygon),5) = "MULTI"'))
+        self.db.commit()
+        end = time.time()
+        logging.info(f'Converted all multipolygon to polygon in {human_time(end - start)}.')
+
     def call_spawnpoints_procedure(self) -> None:
         """
         Calls the stored procedure for counting the spawnpoints in a nest.
@@ -142,7 +153,7 @@ class Database:
             maximum_overlap (int): The maximum allowed overlap between nests.
         """
         logging.info('Creating stored procedure for overlapping nest filtering...')
-        self.db.execute(text(f'DROP PROCEDURE IF EXISTS filter_overlap'))
+        self.db.execute(text(f'DROP PROCEDURE IF EXISTS nest_filter_overlap'))
         with open(NEST_OVERLAP_PROCEDURE, 'r') as file:
             procedure = file.read()
             procedure = procedure.format(maximum_overlap=maximum_overlap)
