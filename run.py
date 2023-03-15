@@ -87,7 +87,7 @@ class NestCollector:
         self.db.save_nests(nests)
 
         # Convert mulitipolygon to polygon
-        self.db.multi_to_poly()
+        # self.db.multi_to_poly()
 
         # Create the stored procedure for counting the spawnpoints in a nest
         self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())

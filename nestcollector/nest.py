@@ -9,6 +9,7 @@ from .models import Nest as NestModel
 from .osm_elements import Node, Relation, Way
 from .timing import human_time
 
+from shapely import concave_hull
 from typing import List, Set, Tuple
 
 
@@ -143,7 +144,7 @@ class Nest:
                     nest_id=relation.id,
                     lat=relation.multipolygon.centroid.y,
                     lon=relation.multipolygon.centroid.x,
-                    polygon=relation.multipolygon,
+                    polygon=concave_hull(relation.multipolygon),
                     area_name=relation.area_name,
                     spawnpoints=None,
                     m2=relation.area
