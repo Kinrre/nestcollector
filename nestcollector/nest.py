@@ -140,7 +140,7 @@ class Nest:
                 small_nests += 1
                 continue
             # Get the concave hull of the multipolygon
-            polygon = concave_hull(relation.multipolygon.boundary)
+            polygon = concave_hull(relation.multipolygon, ratio=0.1)
             nests.append(
                 NestModel(
                     nest_id=relation.id,
