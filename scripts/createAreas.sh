@@ -24,7 +24,15 @@ if [[ ! -z $nestcollector_path ]] ;then
   echo "processing nestcollector areas"
   rm -f $folder/tmp/geofences.txt
 
-  query "select distinct(LEFT(fence_data,length(fence_data)-1)) from settings_geofence where geofence_id in (select a.geofence_included from settings_area_mon_mitm a,settings_area b where a.area_id=b.area_id and b.instance_id in ($mad_instances));" | sed 's/\[\"\[/[/g' | sed 's/",/\n/g' | sed 's/"//g' | sed 's/^ //g' > $folder/tmp/geofences.txt
+  while read -r line ;do
+    area=$(echo $line | awk '{print $1}')
+    coords=$(echo $line | awk '{$1=""; print $0}')
+
+    echo \[$area\] >> $folder/tmp/geofences.txt
+    echo $coords | sed 's/, /xx/g' | sed 's/ /,/g' | sed 's/xx/\n/g' >> $folder/tmp/geofences.txt
+    sed -i '$ d' $folder/tmp/geofences.txt
+  done < <(query "select fence,coords from $stats_db.geofences where type='mon' or type='both'")
+
   node $folder/nestcollector_areas.js  $folder/tmp/geofences.txt $nestcollector_path/config/areas.json
 
   #remove first 2 lines

@@ -1,7 +1,8 @@
-### db
+### db (stats_db is only used in createAreas.sh to export mon fences to areas.json)
 db_ip=127.0.0.1
 db_port=3306
 golbat_db=golbat
+stats_db=
 sql_user=
 sql_pass=
 
