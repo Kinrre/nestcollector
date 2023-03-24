@@ -17,7 +17,7 @@ SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{na
 
 # SQL file for creating the stored procedure
 NEST_PROCEDURE = './sql/get_nest_spawnpoints.sql'
-NEST_CHANSEY_PROCEDURE = './sql/get_nest_spawnpoints_chansey.sql'
+NEST_STATS_PROCEDURE = './sql/get_nest_spawnpoints_stats.sql'
 NEST_OVERLAP_PROCEDURE = './sql/disable_overlapping_nests.sql'
 
 class Database:
@@ -26,9 +26,9 @@ class Database:
 
     Attributes:
         db (sqlalchemy.orm.session.Session): The database session.
-        use_chansey_db (bool): Whether to use the Chansey database.
-        chansey_name (str): The Chansey database name.
-        chansey_db (sqlalchemy.orm.session.Session): The Chansey database session.
+        use_stats_db (bool): Whether to use the Stats database.
+        stats_name (str): The Stats database name.
+        stats_db (sqlalchemy.orm.session.Session): The Stats database session.
     """
 
     def __init__(
@@ -38,12 +38,12 @@ class Database:
             name: str,
             user: str,
             password: str,
-            use_chansey_db: bool = False,
-            chansey_host: str = None,
-            chansey_port: str = None,
-            chansey_name: str = None,
-            chansey_user: str = None,
-            chansey_password: str = None
+            use_stats_db: bool = False,
+            stats_host: str = None,
+            stats_port: str = None,
+            stats_name: str = None,
+            stats_user: str = None,
+            stats_password: str = None
         ) -> None:
         """
         Initializes the NestDatabase class.
@@ -54,18 +54,18 @@ class Database:
             name (str): The database name.
             user (str): The database user.
             password (str): The database password.
-            use_chansey_db (bool): Whether to use the Chansey database.
-            chansey_host (str): The Chansey database host.
-            chansey_port (str): The Chansey database port.
-            chansey_name (str): The Chansey database name.
-            chansey_user (str): The Chansey database user.
-            chansey_password (str): The Chansey database password.
+            use_stats_db (bool): Whether to use the Stats database.
+            stats_host (str): The Stats database host.
+            stats_port (str): The Stats database port.
+            stats_name (str): The Stats database name.
+            stats_user (str): The Stats database user.
+            stats_password (str): The Stats database password.
         """
         self.db = self._create_session_local(host, port, name, user, password, create_tables=True)
-        self.use_chansey_db = use_chansey_db
-        if self.use_chansey_db:
-            self.chansey_name = chansey_name
-            self.chansey_db = self._create_session_local(chansey_host, chansey_port, chansey_name, chansey_user, chansey_password)
+        self.use_stats_db = use_stats_db
+        if self.use_stats_db:
+            self.stats_name = stats_name
+            self.stats_db = self._create_session_local(stats_host, stats_port, stats_name, stats_user, stats_password)
 
     def _create_session_local(self, host: str, port: str, name: str, user: str, password: str, create_tables: bool = False) -> None:
         """
@@ -125,10 +125,10 @@ class Database:
         """
         logging.info('Creating stored procedure for counting the spawnpoints in a nest...')
         self.db.execute(text(f'DROP PROCEDURE IF EXISTS get_nest_spawnpoints'))
-        if self.use_chansey_db:
-            with open(NEST_CHANSEY_PROCEDURE, 'r') as file:
+        if self.use_stats_db:
+            with open(NEST_STATS_PROCEDURE, 'r') as file:
                 procedure = file.read()
-                procedure = procedure.format(chansey_db=self.chansey_name, minimum_spawnpoints=minimum_spawnpoints)
+                procedure = procedure.format(stats_db=self.stats_name, minimum_spawnpoints=minimum_spawnpoints)
         else:
             with open(NEST_PROCEDURE, 'r') as file:
                 procedure = file.read()

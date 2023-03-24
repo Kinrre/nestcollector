@@ -60,12 +60,12 @@ class NestCollector:
             name=self.get_db_name(),
             user=self.get_db_user(),
             password=self.get_db_password(),
-            use_chansey_db=self.get_chansey_use_chansey_db(),
-            chansey_host=self.get_chansey_db_host(),
-            chansey_port=self.get_chansey_db_port(),
-            chansey_name=self.get_chansey_db_name(),
-            chansey_user=self.get_chansey_db_user(),
-            chansey_password=self.get_chansey_db_password()
+            use_stats_db=self.get_stats_use_stats_db(),
+            stats_host=self.get_stats_db_host(),
+            stats_port=self.get_stats_db_port(),
+            stats_name=self.get_stats_db_name(),
+            stats_user=self.get_stats_db_user(),
+            stats_password=self.get_stats_db_password()
         )
 
     def run(self) -> None:
@@ -177,59 +177,59 @@ class NestCollector:
         """
         return self.config['DB']['PASSWORD']
 
-    def get_chansey_use_chansey_db(self) -> bool:
+    def get_stats_use_stats_db(self) -> bool:
         """
-        Returns if Chansey should be used.
+        Returns if Stats should be used.
 
         Returns:
-            bool: If Chansey should be used.
+            bool: If Stats should be used.
         """
-        return self.config['CHANSEY']['USE_CHANSEY_DB'].capitalize() == 'True'
+        return self.config['STATS']['USE_STATS_DB'].capitalize() == 'True'
 
-    def get_chansey_db_host(self) -> str:
+    def get_stats_db_host(self) -> str:
         """
-        Returns the IP host of the Chansey db.
+        Returns the IP host of the Stats db.
 
         Returns:
-            str: The IP host of the Chansey db.
+            str: The IP host of the Stats db.
         """
-        return self.config['CHANSEY']['HOST']
+        return self.config['STATS']['HOST']
     
-    def get_chansey_db_port(self) -> str:
+    def get_stats_db_port(self) -> str:
         """
-        Returns the port of the Chansey db.
+        Returns the port of the Stats db.
 
         Returns:
-            str: The port of the Chansey db.
+            str: The port of the Stats db.
         """
-        return self.config['CHANSEY']['PORT']
+        return self.config['STATS']['PORT']
 
-    def get_chansey_db_name(self) -> str:
+    def get_stats_db_name(self) -> str:
         """
-        Returns the Chansey database name.
+        Returns the Stats database name.
 
         Returns:
-            str: The Chansey database name.
+            str: The Stats database name.
         """
-        return self.config['CHANSEY']['NAME']
+        return self.config['STATS']['NAME']
     
-    def get_chansey_db_user(self) -> str:
+    def get_stats_db_user(self) -> str:
         """
-        Returns the Chansey database username.
+        Returns the Stats database username.
 
         Returns:
-            str: The Chansey database username.
+            str: The Stats database username.
         """
-        return self.config['CHANSEY']['USER']
+        return self.config['STATS']['USER']
     
-    def get_chansey_db_password(self) -> str:
+    def get_stats_db_password(self) -> str:
         """
-        Returns the Chansey database username password.
+        Returns the Stats database username password.
 
         Returns:
-            str: The Chansey database username password.
+            str: The Stats database username password.
         """
-        return self.config['CHANSEY']['PASSWORD']
+        return self.config['STATS']['PASSWORD']
 
 
 if __name__ == '__main__':

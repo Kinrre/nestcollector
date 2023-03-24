@@ -1,0 +1,20 @@
+### db
+db_ip=127.0.0.1
+db_port=3306
+golbat_db=golbat
+sql_user=
+sql_pass=
+
+### golbat
+golbat_api=9001
+golbat_path=
+golbatsecret=
+golbat_pm2_log_path=
+
+### nestcollector
+nestcollector_path=
+
+### nest processing to db
+### add processNests.sh to cron to run periodically, alligned with nest_processing_frequency_hours
+nest_processing_frequency_hours=6
+nest_min_spawn_hr=3

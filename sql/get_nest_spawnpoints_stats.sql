@@ -9,7 +9,7 @@ CREATE TEMPORARY TABLE spawnloc
   )
   AS (
   SELECT point(a.lon,a.lat) as 'location'
-  FROM spawnpoint a, {chansey_db}.geofences b
+  FROM spawnpoint a, {stats_db}.geofences b
   WHERE a.last_seen > unix_timestamp() -604800 and (b.type = 'mon' or b.type = 'both') and ST_CONTAINS(b.st,POINT(a.lat,a.lon)) );
   BEGIN
     DECLARE nest CURSOR FOR SELECT nest_id, polygon FROM nests WHERE polygon IS NOT NULL;

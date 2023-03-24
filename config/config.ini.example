@@ -16,16 +16,16 @@ name = golbat
 user = YOUR_USER_HERE
 password = YOUR_PASSWORD_HERE
 
-[CHANSEY]
+[STATS]
 # As nests can only be parially covered by the mon scan area,
 # spawnpoints known ouside the mon area due to i.e. bigger quest area
 # could result a nest being marked "active" where in fact it should not.
-# Limiting the spawnpoints used for verification to chansey mon area fences should reduce this effect
-use_chansey_db = False
+# Limiting the spawnpoints used for verification to stats mon area fences should reduce this effect
+use_stats_db = False
 
-# Chansey database settings
+# Stats database settings
 host = 127.0.0.1
 port = 3306
-name = chansey
+name = stats
 user = YOUR_USER_HERE
 password = YOUR_PASSWORD_HERE
