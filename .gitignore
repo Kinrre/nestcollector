@@ -135,6 +135,8 @@ dmypy.json
 config/*
 !config/areas.json.example
 !config/config.ini.example
+
+# Script files
 scripts/config.*
 !scripts/config.ini.example
 
