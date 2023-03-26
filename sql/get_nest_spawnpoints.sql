@@ -4,14 +4,15 @@ BEGIN
 -- get data
 DROP TEMPORARY TABLE IF EXISTS spawnloc;
 CREATE TEMPORARY TABLE spawnloc
-  (`location` point NOT NULL,
-   SPATIAL INDEX(`location`)
+  (
+  `location` point NOT NULL, SPATIAL INDEX(`location`)
   )
-  AS (
-  SELECT point(lon,lat) as 'location'
-  FROM spawnpoint
-  WHERE last_seen > unix_timestamp() -604800);
-
+  AS
+  (
+    SELECT point(lon,lat) as 'location'
+    FROM spawnpoint
+    WHERE last_seen > unix_timestamp() -604800
+  );
   BEGIN
     DECLARE nest CURSOR FOR SELECT nest_id, polygon FROM nests WHERE polygon IS NOT NULL;
     FOR nest_record IN nest
@@ -20,7 +21,6 @@ CREATE TEMPORARY TABLE spawnloc
       UPDATE nests SET spawnpoints = @spawns, active = (CASE WHEN @spawns >= {minimum_spawnpoints} THEN 1 ELSE 0 END), discarded = (CASE WHEN @spawns < {minimum_spawnpoints} THEN 'spawnpoints' ELSE '' END) WHERE nest_id = nest_record.nest_id;
     END FOR;
   END;
-
 DROP TEMPORARY TABLE IF EXISTS spawnloc;
 
 END;
