@@ -25,7 +25,7 @@ class NestCollector:
     Attributes:
         config (configparser.ConfigParser): The config parser.
         overpass (Overpass): The Overpass API instance.
-        database (NestDatabase): The database instance.
+        db (NestDatabase): The database instance.
     """
 
     def __init__(self) -> None:
@@ -86,19 +86,12 @@ class NestCollector:
         # Save the nests to the database
         self.db.save_nests(nests)
 
-        # Convert mulitipolygon to polygon
-        # self.db.multi_to_poly()
-
-        # Create the stored procedure for counting the spawnpoints in a nest
-        self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
-
         # Calculate the spawnpoints of the nests
+        self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
         self.db.call_spawnpoints_procedure()
 
-        # Create the stored procedure for filtering overlapping nests
-        self.db.create_filtering_procedure(self.get_maximum_overlap())
-
         # Filter overlapping nests
+        self.db.create_filtering_procedure(self.get_maximum_overlap())
         self.db.call_filtering_procedure()
 
         # Count the final active nests

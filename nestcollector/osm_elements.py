@@ -3,6 +3,7 @@ Module containing the OSMElements class, which is used to parse OSM elements fro
 """
 
 from pyproj import Geod
+from shapely import concave_hull, contains
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import orient
 from typing import List, Mapping, Optional
@@ -257,6 +258,39 @@ class Relation:
         multipolygon = MultiPolygon(polygons)
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
+
+    def get_polygon(self) -> Polygon:
+        """
+        Return the polygon of the relation.
+
+        The process to get the polygon is the following:
+            - Get the biggest polygon of the multipolygon
+            - Get the polygons that are not contained in the biggest polygon
+            - If there is only one polygon, return it
+            - Otherwise, return the concave hull of the polygons
+
+        Returns:
+            Polygon: The polygon of the relation.
+        """
+        # Get the biggest polygon of the multipolygon
+        geod = Geod(ellps='WGS84')
+        biggest_polygon = max(
+            self.multipolygon.geoms, key=lambda poly: geod.geometry_area_perimeter(poly)[0]
+        )
+
+        # Get the polygons that are not contained in the biggest polygon
+        polygons = [biggest_polygon]
+        for polygon in self.multipolygon.geoms:
+            if not contains(biggest_polygon, polygon):
+                polygons.append(polygon)
+        
+        # Return the biggest polygon if it contains the other polygons,
+        # otherwise return the concave hull of the polygons
+        if len(polygons) == 1:
+            return biggest_polygon
+        else:
+            multipolygon = MultiPolygon(polygons)
+            return concave_hull(multipolygon, ratio=0.1)
 
     def __eq__(self, other: 'Relation') -> bool:
         """

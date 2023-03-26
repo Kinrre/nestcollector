@@ -9,7 +9,6 @@ from .models import Nest as NestModel
 from .osm_elements import Node, Relation, Way
 from .timing import human_time
 
-from shapely import concave_hull
 from typing import List, Set, Tuple
 
 
@@ -139,8 +138,8 @@ class Nest:
             if relation.area < self.minimum_m2:
                 small_nests += 1
                 continue
-            # Get the concave hull of the multipolygon
-            polygon = concave_hull(relation.multipolygon, ratio=0.1)
+            # Get the polygon of the relation
+            polygon = relation.get_polygon()
             nests.append(
                 NestModel(
                     nest_id=relation.id,

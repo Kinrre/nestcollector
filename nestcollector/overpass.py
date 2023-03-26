@@ -22,7 +22,7 @@ class Overpass:
         url (str): The URL of the Overpass API.
         area_names (List[str]): The names of the areas.
         polygons (List[shapely.geometry.Polygon]): The polygons to query.
-        coords (List[str]): The coordinates to query.
+        bboxes (List[str]): The bounding boxes to query.
     """
 
     def __init__(self, areas_path: str) -> None:
@@ -35,7 +35,7 @@ class Overpass:
         self.url = 'https://overpass.kumi.systems/api/interpreter'
         self.area_names = self._get_names(areas_path)
         self.polygons = self._load_polygons(areas_path)
-        self.coords = self._get_coords()
+        self.bboxes = self._get_bboxes()
 
     def _get_names(self, areas_path: str) -> List[str]:
         """
@@ -72,28 +72,24 @@ class Overpass:
             polygons.append(geometry.Polygon(coords))
         return polygons
 
-    def _get_coords(self) -> List[str]:
+    def _get_bboxes(self) -> List[str]:
         """
-        Gets the coordinates of the polygons.
-
+        Gets the bounding boxes for the polygons.
         Returns:
-            List[str]: The coordinates to query.
+            List[str]: The bounding boxes to query.
         """
-        coords = []
+        bboxes = []
         for polygon in self.polygons:
-            _coords = []
-            for lat, lon in polygon.exterior.coords:
-                _coords.append(f'{lat} {lon}')
-            _coords = ' '.join(_coords)
-            coords.append(_coords)
-        return coords
+            minx, miny, maxx, maxy = polygon.bounds
+            bboxes.append(f'{minx}, {miny}, {maxx}, {maxy}')
+        return bboxes
 
-    def _query_osm_data(self, coords: str, date: str = '2019-02-24T00:00:00Z') -> dict:
+    def _query_osm_data(self, bbox: str, date: str = '2019-02-24T00:00:00Z') -> dict:
         """
-        Queries the OpenStreetMap data for the given date and coords.
+        Queries the OpenStreetMap data for the given date and bounding box.
 
         Args:
-            coords (str): The coords to query.
+            bbox (str): The bounding box to query.
             date (str, optional): The date to query. Defaults to '2019-02-24T00:00:00Z'.
 
         Returns:
@@ -102,55 +98,56 @@ class Overpass:
         query = """
         [out:json]
         [date:"{date}"]
-        [timeout:100000];
+        [timeout:100000]
+        [bbox:{bbox}];
         (
-            way[leisure=park](poly:"{coords}");
-            way[landuse=recreation_ground](poly:"{coords}");
-            way[leisure=recreation_ground](poly:"{coords}");
-            way[leisure=pitch](poly:"{coords}");
-            way[leisure=garden](poly:"{coords}");
-            way[leisure=golf_course](poly:"{coords}");
-            way[leisure=playground](poly:"{coords}");
-            way[landuse=meadow](poly:"{coords}");
-            way[landuse=grass](poly:"{coords}");
-            way[landuse=greenfield](poly:"{coords}");
-            way[natural=scrub](poly:"{coords}");
-            way[natural=heath](poly:"{coords}");
-            way[natural=grassland](poly:"{coords}");
-            way[landuse=farmyard](poly:"{coords}");
-            way[landuse=vineyard](poly:"{coords}");
-            way[landuse=farmland](poly:"{coords}");
-            way[landuse=orchard](poly:"{coords}");
-            way[natural=plateau](poly:"{coords}");
-            way[natural=moor](poly:"{coords}");
-            way["leisure"="nature_reserve"](poly:"{coords}");
+            way[leisure=park];
+            way[landuse=recreation_ground];
+            way[leisure=recreation_ground];
+            way[leisure=pitch];
+            way[leisure=garden];
+            way[leisure=golf_course];
+            way[leisure=playground];
+            way[landuse=meadow];
+            way[landuse=grass];
+            way[landuse=greenfield];
+            way[natural=scrub];
+            way[natural=heath];
+            way[natural=grassland];
+            way[landuse=farmyard];
+            way[landuse=vineyard];
+            way[landuse=farmland];
+            way[landuse=orchard];
+            way[natural=plateau];
+            way[natural=moor];
+            way["leisure"="nature_reserve"];
             
-            rel[leisure=park](poly:"{coords}");
-            rel[landuse=recreation_ground](poly:"{coords}");
-            rel[leisure=recreation_ground](poly:"{coords}");
-            rel[leisure=pitch](poly:"{coords}");
-            rel[leisure=garden](poly:"{coords}");
-            rel[leisure=golf_course](poly:"{coords}");
-            rel[leisure=playground](poly:"{coords}");
-            rel[landuse=meadow](poly:"{coords}");
-            rel[landuse=grass](poly:"{coords}");
-            rel[landuse=greenfield](poly:"{coords}");
-            rel[natural=scrub](poly:"{coords}");
-            rel[natural=heath](poly:"{coords}");
-            rel[natural=grassland](poly:"{coords}");
-            rel[landuse=farmyard](poly:"{coords}");
-            rel[landuse=vineyard](poly:"{coords}");
-            rel[landuse=farmland](poly:"{coords}");
-            rel[landuse=orchard](poly:"{coords}");
-            rel[natural=plateau](poly:"{coords}");
-            rel[natural=moor](poly:"{coords}");
-            rel["leisure"="nature_reserve"](poly:"{coords}");
+            rel[leisure=park];
+            rel[landuse=recreation_ground];
+            rel[leisure=recreation_ground];
+            rel[leisure=pitch];
+            rel[leisure=garden];
+            rel[leisure=golf_course];
+            rel[leisure=playground];
+            rel[landuse=meadow];
+            rel[landuse=grass];
+            rel[landuse=greenfield];
+            rel[natural=scrub];
+            rel[natural=heath];
+            rel[natural=grassland];
+            rel[landuse=farmyard];
+            rel[landuse=vineyard];
+            rel[landuse=farmland];
+            rel[landuse=orchard];
+            rel[natural=plateau];
+            rel[natural=moor];
+            rel["leisure"="nature_reserve"];
         );
         out body;
         >;
         out skel qt;
         """
-        query = query.format(date=date, coords=coords)
+        query = query.format(date=date, bbox=bbox)
         valid_response = False
         osm_data = None
         # Retry if the response is invalid
@@ -183,7 +180,7 @@ class Overpass:
 
         # Query the OpenStreetMap data for each polygon coords
         osm_data = []
-        for name, coords in zip(self.area_names, self.coords):
+        for name, coords in zip(self.area_names, self.bboxes):
             # Skip if the data already exists
             if os.path.exists(f'data/{name}.json'):
                 logging.info(f'OpenStreetMap data for {name} already exists.')

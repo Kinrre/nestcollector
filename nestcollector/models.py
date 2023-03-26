@@ -62,7 +62,7 @@ class Nest(Base):
     nest_id = Column(BIGINT(20), primary_key=True, autoincrement=False)
     lat = Column(Float(18, True), nullable=False)
     lon = Column(Float(18, True), nullable=False)
-    name = Column(String(250), nullable=False, server_default=text('"unknown"'))
+    name = Column(String(250), nullable=False, server_default=text('"unknown"')) # TODO: Make this configurable
     polygon = Column(Geometry, nullable=False)
     area_name = Column(String(250))
     spawnpoints = Column(SMALLINT(unsigned=True), server_default=text('0'))

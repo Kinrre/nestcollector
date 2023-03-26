@@ -93,17 +93,6 @@ class Database:
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         return SessionLocal()
 
-    def multi_to_poly(self) -> None:
-        """
-        Converts all multipolygon to polygon.
-        """
-        logging.info('Overwriting multipolygon as polygon...')
-        start = time.time()
-        results = self.db.execute(text('update nests set polygon=ST_CONVEXHULL(polygon) where left(astext(polygon),5) = "MULTI"'))
-        self.db.commit()
-        end = time.time()
-        logging.info(f'Converted {results.rowcount} multipolygon to polygon in {human_time(end - start)}.')
-
     def call_spawnpoints_procedure(self) -> None:
         """
         Calls the stored procedure for counting the spawnpoints in a nest.
@@ -113,8 +102,8 @@ class Database:
         self.db.execute(text('CALL get_nest_spawnpoints()'))
         self.db.commit()
         end = time.time()
-        results = self.db.query(Nest).filter(Nest.discarded == "spawnpoints").count()
-        logging.info(f'Calculated and disabled {results} nests low on spawnpoints in {human_time(end - start)}.')
+        results = self.db.query(Nest).filter(Nest.discarded == 'spawnpoints').count()
+        logging.info(f'Disabled {results} nests due to low on spawnpoints in {human_time(end - start)}.')
 
     def create_spawnpoints_procedure(self, minimum_spawnpoints: int) -> None:
         """
@@ -144,7 +133,7 @@ class Database:
         results = self.db.execute(text('CALL nest_filter_overlap()'))
         self.db.commit()
         end = time.time()
-        results = self.db.query(Nest).filter(Nest.discarded == "overlap").count()
+        results = self.db.query(Nest).filter(Nest.discarded == 'overlap').count()
         logging.info(f'Disabled {results} overlapping nests in {human_time(end - start)}.')
 
     def create_filtering_procedure(self, maximum_overlap: int) -> None:
