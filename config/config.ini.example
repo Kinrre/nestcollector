@@ -1,8 +1,8 @@
 [NESTS]
-# Minimum spawnpoints to include the possible nest into the geojson file
-minimum_spawnpoints = 8
+# Minimum spawnpoints to include the possible nest into the db
+minimum_spawnpoints = 3
 
-# Minimum m2 to include the possible nest into the geojson file
+# Minimum m2 to include the possible nest into the db
 minimum_m2 = 100
 
 # Maximum allowed percentage overlap of nests, smallest one will be de-activated
