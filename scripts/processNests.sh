@@ -26,7 +26,7 @@ echo "Starting nest processing script"
 
 #create form temp table
 echo "Creating temp table for forms"
-echo "drop temporary table if exists monform; create temporary table monform as(select pokemon_id,min(form) as form from pokemon group by pokemon_id);" >&3
+echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exists monform; create temporary table monform as(select pokemon_id,min(form) as form from pokemon group by pokemon_id);" >&3
 
 # process
 echo "Processing nests"
