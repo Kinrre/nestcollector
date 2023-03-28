@@ -30,7 +30,7 @@ echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exi
 
 # process
 echo "Processing nests"
-timestamp=$(grep NESTS $golbat_pm2_log_path/golbat-out.log | tail -1 | awk '{ print $2,$3 }' | head -c15)
+timestamp=$(grep NESTS $golbat_pm2_log_path/$golbat_pm2_name-out.log | tail -1 | awk '{ print $2,$3 }' | head -c15)
 
 while read -r line ;do
   nestid=$(echo $line | awk '{ print $5 }' | sed 's/://g')
