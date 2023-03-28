@@ -259,18 +259,18 @@ class Relation:
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
 
-    def get_polygon(self) -> Polygon:
+    def get_simplified_polygon(self) -> Polygon:
         """
-        Return the polygon of the relation.
+        Return the simplified polygon of the relation.
 
-        The process to get the polygon is the following:
+        The process to get the simplified polygon is the following:
             - Get the biggest polygon of the multipolygon
             - Get the polygons that are not contained in the biggest polygon
             - If there is only one polygon, return it
             - Otherwise, return the concave hull of the polygons
 
         Returns:
-            Polygon: The polygon of the relation.
+            Polygon: The simplified polygon of the relation.
         """
         # Get the biggest polygon of the multipolygon
         geod = Geod(ellps='WGS84')
