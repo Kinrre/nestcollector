@@ -13,8 +13,8 @@ if [[ -z $nest_processing_frequency_hours ]] ;then
   exit
 fi
 
-if [[ ! -f $golbat_pm2_log_path/golbat-out.log ]] ;then
-  echo "can't find golbat-out.log, golbat_pm2_log_path set in config"
+if [[ ! -f $golbat_pm2_log_path/$golbat_pm2_name-out.log ]] ;then
+  echo "can't find golbat out log, golbat_pm2_log_path and golbat_pm2_name correctly set in config"
   exit
 fi
 
@@ -43,7 +43,7 @@ while read -r line ;do
     echo  "update nests a left join monform b on a.pokemon_id=b.pokemon_id set a.pokemon_id = $pokemonid , a.pokemon_form=b.form, a.pokemon_count= $quantity , a.pokemon_avg = $hourly , a.pokemon_ratio= $pct , a.updated=unix_timestamp() where a.nest_id=$nestid and a.active=1;" >&3
   fi
 
-done < <(grep "$timestamp.*NESTS" $golbat_pm2_log_path/golbat-out.log | grep -v 'Calculating')
+done < <(grep "$timestamp.*NESTS" $golbat_pm2_log_path/$golbat_pm2_name-out.log | grep -v 'Calculating')
 
 # drop temp table
 echo "drop temporary table monform;" >&3

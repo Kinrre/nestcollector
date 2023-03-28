@@ -8,9 +8,10 @@ sql_pass=
 
 ### golbat
 golbat_api=9001
-golbat_path=
 golbatsecret=
+golbat_path=
 golbat_pm2_log_path=
+golbat_pm2_name=
 
 ### nestcollector
 nestcollector_path=
