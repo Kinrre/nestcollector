@@ -139,15 +139,13 @@ class Nest:
             if relation.area < self.minimum_m2:
                 small_nests += 1
                 continue
-            # Get the simplified polygon of the relation
-            polygon = relation.get_simplified_polygon()
             nests.append(
                 NestModel(
                     nest_id=relation.id,
-                    lat=polygon.centroid.y,
-                    lon=polygon.centroid.x,
+                    lat=relation.multipolygon.centroid.y,
+                    lon=relation.multipolygon.centroid.x,
                     name=relation.name,
-                    polygon=polygon,
+                    polygon=relation.multipolygon,
                     area_name=relation.area_name,
                     spawnpoints=None,
                     m2=relation.area

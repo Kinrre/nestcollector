@@ -237,6 +237,8 @@ class Relation:
         """
         Builds a multipolygon from the relation's ways.
 
+        It builds a multipolygon from the outer ways of the relation.
+
         Args:
             ways (Mapping[int, Way]): The ways of the relation.
 
@@ -254,43 +256,12 @@ class Relation:
                     if polygon is None:
                         return None
                     way.polygon = polygon
-                polygons.append(way.polygon)
+                # Only add the polygon if it is an outer polygon
+                if member['role'] == 'outer':
+                    polygons.append(way.polygon)
         multipolygon = MultiPolygon(polygons)
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
-
-    def get_simplified_polygon(self) -> Polygon:
-        """
-        Return the simplified polygon of the relation.
-
-        The process to get the simplified polygon is the following:
-            - Get the biggest polygon of the multipolygon
-            - Get the polygons that are not contained in the biggest polygon
-            - If there is only one polygon, return it
-            - Otherwise, return the concave hull of the polygons
-
-        Returns:
-            Polygon: The simplified polygon of the relation.
-        """
-        # Get the biggest polygon of the multipolygon
-        geod = Geod(ellps='WGS84')
-        biggest_polygon = max(
-            self.multipolygon.geoms, key=lambda poly: geod.geometry_area_perimeter(poly)[0]
-        )
-
-        # Get the polygons that are not contained in the biggest polygon
-        polygons = [biggest_polygon]
-        for polygon in self.multipolygon.geoms:
-            if not contains(biggest_polygon, polygon):
-                polygons.append(polygon)
-        
-        # Return the biggest polygon if it contains the other polygons,
-        # otherwise return the concave hull of the polygons
-        if len(polygons) == 1:
-            return biggest_polygon
-        else:
-            multipolygon = MultiPolygon(polygons)
-            return concave_hull(multipolygon, ratio=0.1)
 
     def __eq__(self, other: 'Relation') -> bool:
         """
