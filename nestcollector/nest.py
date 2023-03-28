@@ -19,25 +19,34 @@ class Nest:
     Attributes:
         osm_data (List[dict]): The data from the Overpass API.
         area_names (List[str]): The names of the areas.
+        default_name (str): The default name of the nest.
+        minimum_m2 (float): The minimum area in m2 to add a nest into the database.
         nodes (Set[Node]): The nodes from the Overpass API data.
         ways (Set[Way]): The ways from the Overpass API data.
         relations (Set[Relation]): The relations from the Overpass API data.
         nodes_dict (Dict[int, Node]): The nodes from the Overpass API data as a dictionary.
         ways_dict (Dict[int, Way]): The ways from the Overpass API data as a dictionary.
-        minimum_m2 (float): The minimum area in m2 to add a nest into the database.
     """
 
-    def __init__(self, osm_data: List[dict], area_names: List[str], minimum_m2: float) -> None:
+    def __init__(
+            self,
+            osm_data: List[dict],
+            area_names: List[str],
+            default_name: str,
+            minimum_m2: float
+    ) -> None:
         """
         Initializes the Nest class.
 
         Args:
             osm_data (List[dict]): The data from the Overpass API.
             area_names (List[str]): The names of the areas.
+            default_name (str): The default name of the nest.
             minimum_m2 (float): The minimum area in m2 to add a nest into the database.
         """
         self.osm_data = osm_data
         self.area_names = area_names
+        self.default_name = default_name
         self.minimum_m2 = minimum_m2
         self.nodes, self.ways, self.relations = self._get_osm_elements()
         self.nodes_dict = {node.id: node for node in self.nodes}
@@ -73,10 +82,10 @@ class Nest:
                     node = Node(**element)
                     nodes.add(node)
                 elif element['type'] == 'relation':
-                    relation = Relation(**element, area_name=area_name)
+                    relation = Relation(**element, default_name=self.default_name, area_name=area_name)
                     relations.add(relation)
                 elif element['type'] == 'way':
-                    way = Way(**element, area_name=area_name)
+                    way = Way(**element, default_name=self.default_name, area_name=area_name)
                     ways.add(way)
         end = time.time()
         logging.info(f'Found {len(nodes)} nodes, {len(ways)} ways, and {len(relations)} relations in {human_time(end - start)}.')

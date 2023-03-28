@@ -1,4 +1,7 @@
 [NESTS]
+# Default nest name (in case the nest name cannot be determined)
+default_name = unknown
+
 # Minimum spawnpoints to include the possible nest into the db
 minimum_spawnpoints = 3
 

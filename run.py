@@ -79,6 +79,7 @@ class NestCollector:
         nest = Nest(
             osm_data=osm_data,
             area_names=self.overpass.area_names,
+            default_name=self.get_default_name(),
             minimum_m2=self.get_minimum_m2()
         )
         nests = nest.get_nests()
@@ -98,6 +99,15 @@ class NestCollector:
         active_nests = self.db.count_active_nests()
         logging.info(f'Final active nests: {active_nests}')
 
+    def get_default_name(self) -> str:
+        """
+        Returns the default name of a nest.
+
+        Returns:
+            str: The default name of a nest.
+        """
+        return self.config['NESTS']['DEFAULT_NAME']
+
     def get_minimum_spawnpoints(self) -> int:
         """
         Returns the minimum spawnpoints of a nest.
@@ -107,15 +117,6 @@ class NestCollector:
         """
         return int(self.config['NESTS']['MINIMUM_SPAWNPOINTS'])
 
-    def get_maximum_overlap(self) -> int:
-        """
-        Returns the maximum allowed overlap between nests.
-
-        Returns:
-            int: The maximum allowed overlap between nests..
-        """
-        return int(self.config['NESTS']['MAXIMUM_OVERLAP'])
-
     def get_minimum_m2(self) -> float:
         """
         Returns the minimum m2 of a nest.
@@ -124,6 +125,15 @@ class NestCollector:
             float: The minimum m2 of a nest.
         """
         return float(self.config['NESTS']['MINIMUM_M2'])
+    
+    def get_maximum_overlap(self) -> int:
+        """
+        Returns the maximum allowed overlap between nests.
+
+        Returns:
+            int: The maximum allowed overlap between nests.
+        """
+        return int(self.config['NESTS']['MAXIMUM_OVERLAP'])
 
     def get_db_host(self) -> str:
         """

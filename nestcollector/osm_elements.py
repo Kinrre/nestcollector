@@ -3,7 +3,6 @@ Module containing the OSMElements class, which is used to parse OSM elements fro
 """
 
 from pyproj import Geod
-from shapely import concave_hull, contains
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import orient
 from typing import List, Mapping, Optional
@@ -91,6 +90,7 @@ class Way:
             id: int,
             nodes: List[int],
             tags: Optional[dict] = None,
+            default_name: Optional[str] = None,
             area_name: Optional[str] = None
         ) -> None:
         """
@@ -101,13 +101,14 @@ class Way:
             id (int): The ID of the element.
             nodes (List[int]): The nodes of the way.
             tags (Optional[dict]): The tags of the element.
+            default_name (Optional[str]): The default name of the way.
             area_name (Optional[str]): The name of the area the way belongs.
         """
         self.type = type
         self.id = id
         self.nodes = nodes
         self.tags = tags
-        self.name = tags['name'] if tags and 'name' in tags else None
+        self.name = tags['name'] if tags and 'name' in tags else default_name
         self.polygon = None
         self._area = None
         self.area_name = area_name
@@ -197,6 +198,7 @@ class Relation:
             id: int,
             members: List[dict],
             tags: Optional[dict] = None,
+            default_name: Optional[str] = None,
             area_name: Optional[str] = None
         ) -> None:
         """
@@ -207,13 +209,14 @@ class Relation:
             id (int): The ID of the element.
             members (List[dict]): The members of the relation.
             tags (Optional[dict]): The tags of the element.
+            default_name (Optional[str]): The default name of the relation.
             area_name (Optional[str]): The name of the area the relation belongs.
         """
         self.type = type
         self.id = id
         self.members = members
         self.tags = tags
-        self.name = tags['name'] if tags and 'name' in tags else None
+        self.name = tags['name'] if tags and 'name' in tags else default_name
         self.multipolygon = None
         self._area = None
         self.area_name = area_name
