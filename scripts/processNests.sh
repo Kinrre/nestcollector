@@ -5,6 +5,7 @@ folder="$(pwd)"
 source $folder/config.ini
 
 start=$(date '+%Y%m%d %H:%M:%S')
+file=$(find $golbat_pm2_log_path -maxdepth 1 -iname $golbat_pm2_name-out.log)
 
 ## Process golbat log to nests db
 # checks
@@ -13,7 +14,7 @@ if [[ -z $nest_processing_frequency_hours ]] ;then
   exit
 fi
 
-if [[ ! -f $golbat_pm2_log_path/$golbat_pm2_name-out.log ]] ;then
+if [[ ! -f $file ]] ;then
   echo "can't find golbat out log, golbat_pm2_log_path and golbat_pm2_name correctly set in config"
   exit
 fi
@@ -30,7 +31,7 @@ echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exi
 
 # process
 echo "Processing nests"
-timestamp=$(grep NESTS $golbat_pm2_log_path/$golbat_pm2_name-out.log | tail -1 | awk '{ print $2,$3 }' | head -c15)
+timestamp=$(grep NESTS $file | tail -1 | awk '{ print $2,$3 }' | head -c15)
 
 while read -r line ;do
   nestid=$(echo $line | awk '{ print $5 }' | sed 's/://g')
@@ -43,7 +44,7 @@ while read -r line ;do
     echo  "update nests a left join monform b on a.pokemon_id=b.pokemon_id set a.pokemon_id = $pokemonid , a.pokemon_form=b.form, a.pokemon_count= $quantity , a.pokemon_avg = $hourly , a.pokemon_ratio= $pct , a.updated=unix_timestamp() where a.nest_id=$nestid and a.active=1;" >&3
   fi
 
-done < <(grep "$timestamp.*NESTS" $golbat_pm2_log_path/$golbat_pm2_name-out.log | grep -v 'Calculating')
+done < <(grep "$timestamp.*NESTS" $file | grep -v 'Calculating')
 
 # drop temp table
 echo "drop temporary table monform;" >&3
