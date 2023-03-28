@@ -81,6 +81,7 @@ class Nest(Base):
             nest_id: int,
             lat: float,
             lon: float,
+            name: str,
             polygon: Geometry,
             area_name: str,
             spawnpoints: int,
@@ -93,6 +94,7 @@ class Nest(Base):
             nest_id (int): The ID of the nest.
             lat (float): The latitude of the nest.
             lon (float): The longitude of the nest.
+            name (str): The name of the nest.
             polygon (Geometry): The polygon of the nest.
             area_name (str): The name of the area.
             spawnpoints (int): The number of spawnpoints in the nest.
@@ -101,6 +103,7 @@ class Nest(Base):
         self.nest_id = nest_id
         self.lat = lat
         self.lon = lon
+        self.name = name
         self.polygon = polygon
         self.area_name = area_name
         self.spawnpoints = spawnpoints
