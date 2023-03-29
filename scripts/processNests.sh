@@ -25,10 +25,6 @@ exec 3> >(MYSQL_PWD=$sql_pass mysql -h$db_ip -P$db_port -u$sql_user $golbat_db -
 echo ""
 echo "Starting nest processing script"
 
-#create form temp table
-echo "Creating temp table for forms"
-echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exists monform; create temporary table monform as(select pokemon_id,min(form) as form from pokemon group by pokemon_id);" >&3
-
 # process
 echo "Processing nests"
 timestamp=$(grep NESTS $file | tail -1 | awk '{ print $2,$3 }' | head -c15)
@@ -41,12 +37,15 @@ while read -r line ;do
   pct=$(echo $line | awk '{ print $12 }' | sed 's/(//g')
 
   if [[ ! -z $pokemonid ]] ;then
-    echo  "update nests a left join monform b on a.pokemon_id=b.pokemon_id set a.pokemon_id = $pokemonid , a.pokemon_form=b.form, a.pokemon_count= $quantity , a.pokemon_avg = $hourly , a.pokemon_ratio= $pct , a.updated=unix_timestamp() where a.nest_id=$nestid and a.active=1;" >&3
+    echo  "update nests set pokemon_id = $pokemonid , pokemon_form=NULL, pokemon_count= $quantity , pokemon_avg = $hourly , pokemon_ratio= $pct , updated=unix_timestamp() where nest_id=$nestid and active=1;" >&3
   fi
 
 done < <(grep "$timestamp.*NESTS" $file | grep -v 'Calculating')
 
-# drop temp table
+#add some form
+echo "Updating nest form"
+echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exists monform; create temporary table monform as(select pokemon_id,min(form) as form from pokemon group by pokemon_id);" >&3
+echo "update nests a, monform b set a.pokemon_form=b.form where a.active=1 and a.pokemon_id=b.pokemon_id;" >&3
 echo "drop temporary table monform;" >&3
 
 # check nests on min spawns/hr
