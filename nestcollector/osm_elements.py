@@ -3,8 +3,9 @@ Module containing the OSMElements class, which is used to parse OSM elements fro
 """
 
 from pyproj import Geod
+from shapely.errors import TopologicalError
 from shapely.geometry import MultiPolygon, Polygon
-from shapely.ops import orient
+from shapely.ops import linemerge, orient, polygonize, unary_union
 from typing import List, Mapping, Optional
 
 
@@ -263,6 +264,7 @@ class Relation:
                 if member['role'] == 'outer':
                     polygons.append(way.polygon)
         multipolygon = MultiPolygon(polygons)
+        multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
 
