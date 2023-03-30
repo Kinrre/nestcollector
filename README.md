@@ -30,5 +30,6 @@ Collect possible Pokémon Go nests from OSM (Open Street Map) data.
   python3 run.py
   ```
 
-## Author
+## Authors
 * [Kinrre](https://github.com/Kinrre)
+* [dkmur](https://github.com/dkmur)
