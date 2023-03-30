@@ -138,6 +138,7 @@ config/*
 
 # Script files
 scripts/config.*
+scripts/cron*
 !scripts/config.ini.example
 
 # OSM data
