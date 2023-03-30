@@ -42,7 +42,7 @@ In order to execute automatically the scripts and keep updated your nests append
 05 */<NEST_PROCESSING_FREQUENCY_HOURS> * * * cd <PATH_TO_NESTCOLLECTOR>/scripts && ./processNests.sh >> <PATH_TO_NESTCOLLECTOR>/crontab.out 2>> <PATH_TO_NESTCOLLECTOR>/crontab.err
 ```
 
-_NOTE: NEST_PROCESSING_FREQUENCY_HOURS should match the value specified in `scripts/config.ini`_.
+_**NOTE:** NEST_PROCESSING_FREQUENCY_HOURS should match the value specified in `scripts/config.ini`_.
 
 ## Authors
 * [Kinrre](https://github.com/Kinrre)
