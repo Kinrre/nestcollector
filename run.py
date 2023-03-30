@@ -87,13 +87,18 @@ class NestCollector:
         # Save the nests to the database
         self.db.save_nests(nests)
 
+        # Filter low coverage nests by mon area
+        if self.get_stats_use_stats_db():
+            self.db.create_low_coverage_procedure(self.get_stats_minimum_coverage())
+            self.db.call_low_coverage_procedure()
+
         # Calculate the spawnpoints of the nests
         self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
         self.db.call_spawnpoints_procedure()
 
         # Filter overlapping nests
-        self.db.create_filtering_procedure(self.get_maximum_overlap())
-        self.db.call_filtering_procedure()
+        self.db.create_overlapping_procedure(self.get_maximum_overlap())
+        self.db.call_overlappping_procedure()
 
         # Count the final active nests
         active_nests = self.db.count_active_nests()
@@ -188,6 +193,15 @@ class NestCollector:
             bool: If Stats should be used.
         """
         return self.config['STATS']['USE_STATS_DB'].capitalize() == 'True'
+    
+    def get_stats_minimum_coverage(self) -> int:
+        """
+        Returns the minimum coverage of a nest.
+
+        Returns:
+            int: The minimum coverage of a nest.
+        """
+        return int(self.config['STATS']['MINIMUM_COVERAGE'])
 
     def get_stats_db_host(self) -> str:
         """

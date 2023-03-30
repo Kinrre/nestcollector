@@ -16,9 +16,11 @@ from typing import List
 SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4'
 
 # SQL file for creating the stored procedure
-NEST_PROCEDURE = './sql/get_nest_spawnpoints.sql'
-NEST_STATS_PROCEDURE = './sql/get_nest_spawnpoints_stats.sql'
-NEST_OVERLAP_PROCEDURE = './sql/disable_overlapping_nests.sql'
+NEST_SPAWNPOINTS_PROCEDURE = './sql/get_nest_spawnpoints.sql'
+NEST_OVERLAPPING_PROCEDURE = './sql/disable_overlapping_nests.sql'
+NEST_STATS_SPAWNPOINTS_PROCEDURE = './sql/stats/get_nest_spawnpoints.sql'
+NEST_STATS_LOW_COVERAGE_PROCEDURE = './sql/stats/disable_low_coverage_nests.sql'
+
 
 class Database:
     """
@@ -93,6 +95,31 @@ class Database:
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         return SessionLocal()
 
+    def call_low_coverage_procedure(self) -> None:
+        """
+        Calls the stored procedure for filtering low coverage nests by mon area.
+        """
+        logging.info('Disabling low coverage by mon area nests...')
+        start = time.time()
+        self.db.execute(text('CALL nest_filter_low_coverage()'))
+        self.db.commit()
+        end = time.time()
+        count = self.db.query(Nest).filter(Nest.discarded == 'low_coverage').count()
+        logging.info(f'Disabled {count} low coverage by mon area nests in {human_time(end - start)}.')
+
+    def create_low_coverage_procedure(self, minimum_coverage: int) -> None:
+        """
+        Creates the stored procedure for filtering low coverage nests by mon area.
+
+        Args:
+            minimum_coverage (int): The minimum coverage of a nest by mon area.
+        """
+        self.db.execute(text(f'DROP PROCEDURE IF EXISTS nest_filter_low_coverage'))
+        with open(NEST_STATS_LOW_COVERAGE_PROCEDURE, 'r') as file:
+            procedure = file.read()
+            procedure = procedure.format(stats_db=self.stats_name, minimum_coverage=minimum_coverage)
+        self.db.execute(text(procedure))
+
     def call_spawnpoints_procedure(self) -> None:
         """
         Calls the stored procedure for counting the spawnpoints in a nest.
@@ -102,8 +129,8 @@ class Database:
         self.db.execute(text('CALL get_nest_spawnpoints()'))
         self.db.commit()
         end = time.time()
-        results = self.db.query(Nest).filter(Nest.discarded == 'spawnpoints').count()
-        logging.info(f'Disabled {results} nests due to low on spawnpoints in {human_time(end - start)}.')
+        count = self.db.query(Nest).filter(Nest.discarded == 'spawnpoints').count()
+        logging.info(f'Disabled {count} nests due to low number of spawnpoints in {human_time(end - start)}.')
 
     def create_spawnpoints_procedure(self, minimum_spawnpoints: int) -> None:
         """
@@ -112,40 +139,38 @@ class Database:
         Args:
             minimum_spawnpoints (int): The minimum spawnpoints of a nest.
         """
-        logging.info('Creating stored procedure for counting the spawnpoints in a nest...')
         self.db.execute(text(f'DROP PROCEDURE IF EXISTS get_nest_spawnpoints'))
         if self.use_stats_db:
-            with open(NEST_STATS_PROCEDURE, 'r') as file:
+            with open(NEST_STATS_SPAWNPOINTS_PROCEDURE, 'r') as file:
                 procedure = file.read()
                 procedure = procedure.format(stats_db=self.stats_name, minimum_spawnpoints=minimum_spawnpoints)
         else:
-            with open(NEST_PROCEDURE, 'r') as file:
+            with open(NEST_SPAWNPOINTS_PROCEDURE, 'r') as file:
                 procedure = file.read()
                 procedure = procedure.format(minimum_spawnpoints=minimum_spawnpoints)
         self.db.execute(text(procedure))
 
-    def call_filtering_procedure(self) -> None:
+    def call_overlappping_procedure(self) -> None:
         """
         Calls the stored procedure for filtering overlapping nests.
         """
         logging.info('Disabling overlapping nests...')
         start = time.time()
-        results = self.db.execute(text('CALL nest_filter_overlap()'))
+        self.db.execute(text('CALL nest_filter_overlap()'))
         self.db.commit()
         end = time.time()
-        results = self.db.query(Nest).filter(Nest.discarded == 'overlap').count()
-        logging.info(f'Disabled {results} overlapping nests in {human_time(end - start)}.')
+        count = self.db.query(Nest).filter(Nest.discarded == 'overlap').count()
+        logging.info(f'Disabled {count} overlapping nests in {human_time(end - start)}.')
 
-    def create_filtering_procedure(self, maximum_overlap: int) -> None:
+    def create_overlapping_procedure(self, maximum_overlap: int) -> None:
         """
         Creates the stored procedure for filtering overlapping nests.
 
         Args:
             maximum_overlap (int): The maximum allowed overlap between nests.
         """
-        logging.info('Creating stored procedure for overlapping nest filtering...')
         self.db.execute(text(f'DROP PROCEDURE IF EXISTS nest_filter_overlap'))
-        with open(NEST_OVERLAP_PROCEDURE, 'r') as file:
+        with open(NEST_OVERLAPPING_PROCEDURE, 'r') as file:
             procedure = file.read()
             procedure = procedure.format(maximum_overlap=maximum_overlap)
         self.db.execute(text(procedure))

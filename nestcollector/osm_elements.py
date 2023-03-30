@@ -3,9 +3,8 @@ Module containing the OSMElements class, which is used to parse OSM elements fro
 """
 
 from pyproj import Geod
-from shapely.errors import TopologicalError
 from shapely.geometry import MultiPolygon, Polygon
-from shapely.ops import linemerge, orient, polygonize, unary_union
+from shapely.ops import orient
 from typing import List, Mapping, Optional
 
 
