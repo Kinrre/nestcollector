@@ -240,9 +240,9 @@ class Relation:
         """
         Builds a multipolygon from the relation's ways.
 
-        It builds a multipolygon from the outer ways of the relation, if there are no outer ways,
-        it builds a multipolygon from the ways with no role, and if there are no ways with no role,
-        it builds a multipolygon from the inner ways of the relation.
+        It builds a multipolygon from the outer ways of the relation, if there are
+        no outer ways, from the ways with no role, and if there are no ways with
+        no role,from the inner ways of the relation, else it returns None.
 
         Args:
             ways (Mapping[int, Way]): The ways of the relation.
@@ -264,13 +264,15 @@ class Relation:
                 # Add the polygon to the corresponding list of polygons
                 polygons[member['role']].append(way.polygon)
 
-        # Check if the relation has at least one outer way
+        # Check if the relation has at least one 
         if len(polygons['outer']) > 0:
             polygons = polygons['outer']
         elif len(polygons['']) > 0:
             polygons = polygons['']
-        else:
+        elif len(polygons['inner']) > 0:
             polygons = polygons['inner']
+        else:
+            return None
 
         multipolygon = MultiPolygon(polygons)
         multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
