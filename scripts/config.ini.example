@@ -10,8 +10,7 @@ sql_pass=
 golbat_api=9001
 golbatsecret=
 golbat_path=
-golbat_pm2_log_path=
-golbat_pm2_name=
+golbat_latest_log=		# i.e. /home/dkmur/.pm2/logs/golbat-out.log
 
 ### nestcollector
 nestcollector_path=

@@ -5,7 +5,6 @@ folder="$(pwd)"
 source $folder/config.ini
 
 start=$(date '+%Y%m%d %H:%M:%S')
-file=$(find $golbat_pm2_log_path -maxdepth 1 -iname $golbat_pm2_name-out.log)
 
 ## Process golbat log to nests db
 # checks
@@ -14,8 +13,8 @@ if [[ -z $nest_processing_frequency_hours ]] ;then
   exit
 fi
 
-if [[ ! -f $file ]] ;then
-  echo "can't find golbat out log, golbat_pm2_log_path and golbat_pm2_name correctly set in config"
+if [[ ! -f $golbat_latest_log ]] ;then
+  echo "can't find $golbat_latest_log, checkit is correctly set in config"
   exit
 fi
 
@@ -27,7 +26,7 @@ echo "Starting nest processing script"
 
 # process
 echo "Processing nests"
-timestamp=$(grep NESTS $file | tail -1 | awk '{ print $2,$3 }' | head -c15)
+timestamp=$(grep NESTS $golbat_latest_log | tail -1 | awk '{ print $2,$3 }' | head -c15)
 
 while read -r line ;do
   nestid=$(echo $line | awk '{ print $5 }' | sed 's/://g')
@@ -40,7 +39,7 @@ while read -r line ;do
     echo  "update nests set pokemon_id = $pokemonid , pokemon_form=NULL, pokemon_count= $quantity , pokemon_avg = $hourly , pokemon_ratio= $pct , updated=unix_timestamp() where nest_id=$nestid and active=1;" >&3
   fi
 
-done < <(grep "$timestamp.*NESTS" $file | grep -v 'Calculating')
+done < <(grep "$timestamp.*NESTS" $golbat_latest_log | grep -v 'Calculating')
 
 #add some form
 echo "Updating nest form"
