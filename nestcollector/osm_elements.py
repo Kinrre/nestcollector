@@ -260,7 +260,7 @@ class Relation:
                         return None
                     way.polygon = polygon
                 # Only add the polygon if it is an outer polygon
-                if member['role'] == 'outer':
+                if member['role'] == 'outer' or member['role'] == '':
                     polygons.append(way.polygon)
         multipolygon = MultiPolygon(polygons)
         multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
