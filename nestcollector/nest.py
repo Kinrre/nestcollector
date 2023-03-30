@@ -11,6 +11,9 @@ from .timing import human_time
 
 from typing import List, Set, Tuple
 
+# The maximum area in m2 to add a nest into the database (30 km2)
+MAXIMUM_M2 = 30e6
+
 
 class Nest:
     """
@@ -111,6 +114,9 @@ class Nest:
             if way.area < self.minimum_m2:
                 small_nests += 1
                 continue
+            # Skip ways that are too big
+            if way.area > MAXIMUM_M2:
+                continue
             # Skip ways that are duplicated in a relation
             if way.used_in_relation:
                 duplicated_nests += 1
@@ -147,6 +153,9 @@ class Nest:
             # Skip relations that are too small
             if relation.area < self.minimum_m2:
                 small_nests += 1
+                continue
+            # Skip relations that are too big
+            if relation.area > MAXIMUM_M2:
                 continue
             nests.append(
                 NestModel(
