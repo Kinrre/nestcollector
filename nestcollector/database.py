@@ -192,11 +192,10 @@ class Database:
         Args:
             nests (List[Nest]): The nests to save.
         """
-        self.db.query(Nest).delete()
-        logging.info('Deleted all nests from database.')
         logging.info(f'Saving {len(nests)} nests to database...')
         start = time.time()
-        self.db.add_all(nests)
+        for nest in nests:
+            self.db.merge(nest)
         self.db.commit()
         end = time.time()
         logging.info(f'Saved nests to database in {human_time(end - start)}.')
