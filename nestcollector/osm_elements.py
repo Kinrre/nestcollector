@@ -240,7 +240,9 @@ class Relation:
         """
         Builds a multipolygon from the relation's ways.
 
-        It builds a multipolygon from the outer ways of the relation.
+        It builds a multipolygon from the outer ways of the relation, if there are no outer ways,
+        it builds a multipolygon from the ways with no role, and if there are no ways with no role,
+        it builds a multipolygon from the inner ways of the relation.
 
         Args:
             ways (Mapping[int, Way]): The ways of the relation.
@@ -248,7 +250,7 @@ class Relation:
         Returns:
             MultiPolygon: The multipolygon of the relation.
         """
-        polygons = []
+        polygons = {'outer': [], '': [], 'inner': []}
         for member in self.members:
             if member['type'] == 'way':
                 way = ways[member['ref']]
@@ -257,11 +259,19 @@ class Relation:
                     polygon = way.build_polygon(ways)
                     # Check if the way is a polygon
                     if polygon is None:
-                        return None
+                        continue
                     way.polygon = polygon
-                # Only add the polygon if it is an outer polygon
-                if member['role'] == 'outer' or member['role'] == '':
-                    polygons.append(way.polygon)
+                # Add the polygon to the corresponding list of polygons
+                polygons[member['role']].append(way.polygon)
+
+        # Check if the relation has at least one outer way
+        if len(polygons['outer']) > 0:
+            polygons = polygons['outer']
+        elif len(polygons['']) > 0:
+            polygons = polygons['']
+        else:
+            polygons = polygons['inner']
+
         multipolygon = MultiPolygon(polygons)
         multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
