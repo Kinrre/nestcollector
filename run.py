@@ -85,6 +85,7 @@ class NestCollector:
         nests = nest.get_nests()
 
         # Save the nests to the database
+        previous_active_nests = self.db.count_active_nests()
         self.db.save_nests(nests)
 
         # Calculate the spawnpoints of the nests
@@ -101,8 +102,9 @@ class NestCollector:
         self.db.call_overlappping_procedure()
 
         # Count the final active nests
-        active_nests = self.db.count_active_nests()
-        logging.info(f'Final active nests: {active_nests}')
+        final_active_nests = self.db.count_active_nests()
+        new_nests = final_active_nests - previous_active_nests
+        logging.info(f'Final active nests: {final_active_nests} ({new_nests} new nests)')
 
     def get_default_name(self) -> str:
         """
