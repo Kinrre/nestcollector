@@ -26,7 +26,7 @@ password = YOUR_PASSWORD_HERE
 # Limiting the spawnpoints used for verification to stats mon area fences should reduce this effect
 use_stats_db = False
 
-# Minimum required overlapping with mon scan areas (as defined in stats), else will be disabled
+# Minimum percentage overlap with mon scan areas (as defined in stats), else will be disabled
 minimum_coverage = 30
 
 # Stats database settings
