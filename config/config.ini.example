@@ -3,7 +3,7 @@
 default_name = unknown
 
 # Minimum spawnpoints to include the possible nest into the db
-minimum_spawnpoints = 3
+minimum_spawnpoints = 10
 
 # Minimum m2 to include the possible nest into the db
 minimum_m2 = 100
