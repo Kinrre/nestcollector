@@ -87,14 +87,14 @@ class NestCollector:
         # Save the nests to the database
         self.db.save_nests(nests)
 
+        # Calculate the spawnpoints of the nests
+        self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
+        self.db.call_spawnpoints_procedure()
+
         # Filter low coverage nests by mon area
         if self.get_stats_use_stats_db():
             self.db.create_low_coverage_procedure(self.get_stats_minimum_coverage())
             self.db.call_low_coverage_procedure()
-
-        # Calculate the spawnpoints of the nests
-        self.db.create_spawnpoints_procedure(self.get_minimum_spawnpoints())
-        self.db.call_spawnpoints_procedure()
 
         # Filter overlapping nests
         self.db.create_overlapping_procedure(self.get_maximum_overlap())
