@@ -5,7 +5,7 @@ Module containing the OSMElements class, which is used to parse OSM elements fro
 from pyproj import Geod
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import orient
-from typing import List, Mapping, Optional
+from typing import List, Mapping, Optional, Union
 
 
 class Node:
@@ -236,7 +236,7 @@ class Relation:
             self._area = geod.geometry_area_perimeter(self.multipolygon)[0]
         return self._area
 
-    def build_multipolygon(self, ways: Mapping[int, Way]) -> MultiPolygon:
+    def build_multipolygon(self, ways: Mapping[int, Way], buffer: bool = False) -> Union[MultiPolygon, Polygon]:
         """
         Builds a multipolygon from the relation's ways.
 
@@ -246,6 +246,7 @@ class Relation:
 
         Args:
             ways (Mapping[int, Way]): The ways of the relation.
+            buffer (Optional[bool]): Whether to buffer the multipolygon or not. Defaults to False.
 
         Returns:
             MultiPolygon: The multipolygon of the relation.
@@ -275,7 +276,8 @@ class Relation:
             return None
 
         multipolygon = MultiPolygon(polygons)
-        multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
+        if buffer:
+            multipolygon = multipolygon.buffer(1e-4) # As OSM data is not perfect, we need to buffer the multipolygon
         multipolygon = orient(multipolygon) # Orient the multipolygon to compute the m2 area
         return multipolygon
 

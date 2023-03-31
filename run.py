@@ -80,7 +80,8 @@ class NestCollector:
             osm_data=osm_data,
             area_names=self.overpass.area_names,
             default_name=self.get_default_name(),
-            minimum_m2=self.get_minimum_m2()
+            minimum_m2=self.get_minimum_m2(),
+            buffer_multipolygons=self.get_buffer_multipolygons()
         )
         nests = nest.get_nests()
 
@@ -141,6 +142,15 @@ class NestCollector:
             int: The maximum allowed overlap between nests.
         """
         return int(self.config['NESTS']['MAXIMUM_OVERLAP'])
+    
+    def get_buffer_multipolygons(self) -> bool:
+        """
+        Returns whether to buffer multipolygons.
+
+        Returns:
+            bool: Whether to buffer multipolygons.
+        """
+        return self.config['NESTS']['BUFFER_MULTIPOLYGONS'].capitalize() == 'True'
 
     def get_db_host(self) -> str:
         """

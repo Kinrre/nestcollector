@@ -24,6 +24,7 @@ class Nest:
         area_names (List[str]): The names of the areas.
         default_name (str): The default name of the nest.
         minimum_m2 (float): The minimum area in m2 to add a nest into the database.
+        buffer_multipolygons (bool): Whether to buffer the multipolygons or not.
         nodes (Set[Node]): The nodes from the Overpass API data.
         ways (Set[Way]): The ways from the Overpass API data.
         relations (Set[Relation]): The relations from the Overpass API data.
@@ -36,7 +37,8 @@ class Nest:
             osm_data: List[dict],
             area_names: List[str],
             default_name: str,
-            minimum_m2: float
+            minimum_m2: float,
+            buffer_multipolygons: bool
     ) -> None:
         """
         Initializes the Nest class.
@@ -46,11 +48,13 @@ class Nest:
             area_names (List[str]): The names of the areas.
             default_name (str): The default name of the nest.
             minimum_m2 (float): The minimum area in m2 to add a nest into the database.
+            buffer_multipolygons (bool): Whether to buffer the multipolygons or not.
         """
         self.osm_data = osm_data
         self.area_names = area_names
         self.default_name = default_name
         self.minimum_m2 = minimum_m2
+        self.buffer_multipolygons = buffer_multipolygons
         self.nodes, self.ways, self.relations = self._get_osm_elements()
         self.nodes_dict = {node.id: node for node in self.nodes}
         self.ways_dict = {way.id: way for way in self.ways}
@@ -65,7 +69,7 @@ class Nest:
         for way in self.ways:
             way.polygon = way.build_polygon(self.nodes_dict)
         for relation in self.relations:
-            relation.multipolygon = relation.build_multipolygon(self.ways_dict)
+            relation.multipolygon = relation.build_multipolygon(self.ways_dict, self.buffer_multipolygons)
         end = time.time()
         logging.info(f'Polygons built in {human_time(end - start)}.')
 

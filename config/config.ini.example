@@ -11,6 +11,9 @@ minimum_m2 = 100
 # Maximum allowed percentage overlap of nests, smallest one will be de-activated
 maximum_overlap = 60
 
+# Set this to True if you see some weird nests in your map (like with holes in the middle)
+buffer_multipolygons = False
+
 [DB]
 # Database settings to store the nests
 host = 127.0.0.1
