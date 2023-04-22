@@ -251,7 +251,8 @@ class Relation:
         Returns:
             MultiPolygon: The multipolygon of the relation.
         """
-        polygons = {'outer': [], '': [], 'inner': []}
+        # NOTE: Perimeter ways must be ignored according to the OSM wiki
+        polygons = {'outer': [], '': [], 'inner': [], 'perimeter': []}
         for member in self.members:
             if member['type'] == 'way':
                 way = ways[member['ref']]
