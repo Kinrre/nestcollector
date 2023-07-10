@@ -252,7 +252,7 @@ class Relation:
             MultiPolygon: The multipolygon of the relation.
         """
         # NOTE: Perimeter ways must be ignored according to the OSM wiki
-        polygons = {'outer': [], '': [], 'inner': [], 'perimeter': []}
+        polygons = {'outer': [], '': [], 'inner': []}
         for member in self.members:
             if member['type'] == 'way':
                 way = ways[member['ref']]
@@ -264,7 +264,8 @@ class Relation:
                         continue
                     way.polygon = polygon
                 # Add the polygon to the corresponding list of polygons
-                polygons[member['role']].append(way.polygon)
+                if member['role'] in polygons:
+                    polygons[member['role']].append(way.polygon)
 
         # Check if the relation has at least one 
         if len(polygons['outer']) > 0:
