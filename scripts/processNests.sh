@@ -46,6 +46,9 @@ echo "Updating nest form"
 echo "SET SESSION tx_isolation = 'READ-UNCOMMITTED'; drop temporary table if exists monform; create temporary table monform as(select pokemon_id,min(form) as form from pokemon group by pokemon_id);" >&3
 echo "update nests a, monform b set a.pokemon_form=b.form where a.active=1 and a.pokemon_id=b.pokemon_id;" >&3
 echo "drop temporary table monform;" >&3
+#when form is missing i.e. due to use of Golbat mem only set form=0
+echo "update nests set pokemon_form=0 where active=1 and pokemon_form is NULL;" >&3
+
 
 # check nests on min spawns/hr
 echo "Adjusting nests table on minimum spawns/hr"
