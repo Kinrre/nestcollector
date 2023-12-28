@@ -139,6 +139,9 @@ class Way:
         Returns:
             Polygon: The polygon of the way.
         """
+        # Check that the nodes defining the way are in the nodes dict
+        # If any of the nodes is not in the dict, remove that node from the way
+        self.nodes = [node for node in self.nodes if node in nodes]
         # Check if the way has at least 3 nodes
         if len(self.nodes) < 3:
             return None
@@ -255,7 +258,10 @@ class Relation:
         polygons = {'outer': [], '': [], 'inner': []}
         for member in self.members:
             if member['type'] == 'way':
-                way = ways[member['ref']]
+                way = ways.get(member['ref'])
+                # Check if the way is in the ways dict
+                if not way:
+                    continue
                 way.used_in_relation = True
                 if way.polygon is None:
                     polygon = way.build_polygon(ways)
