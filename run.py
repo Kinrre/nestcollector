@@ -6,6 +6,7 @@ import configparser
 import logging
 import os
 import sys
+import urllib
 
 from nestcollector.nest import Nest
 from nestcollector.database import Database
@@ -59,7 +60,7 @@ class NestCollector:
             port=self.get_db_port(),
             name=self.get_db_name(),
             user=self.get_db_user(),
-            password=self.get_db_password(),
+            password=urllib.parse.quote(self.get_db_password()),
             use_stats_db=self.get_stats_use_stats_db(),
             stats_host=self.get_stats_db_host(),
             stats_port=self.get_stats_db_port(),
