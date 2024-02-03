@@ -4,6 +4,7 @@ Module containing the Database class, which is used to connect to the database a
 
 import logging
 import time
+import urllib
 
 from .models import Base, Nest
 from .timing import human_time
@@ -63,6 +64,10 @@ class Database:
             stats_user (str): The Stats database user.
             stats_password (str): The Stats database password.
         """
+        # Parse special characters
+        password = urllib.parse.quote(password)
+        stats_password = urllib.parse.quote(stats_password)
+
         self.db = self._create_session_local(host, port, name, user, password, create_tables=True)
         self.use_stats_db = use_stats_db
         if self.use_stats_db:
