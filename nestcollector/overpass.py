@@ -119,11 +119,11 @@ class Overpass:
         # Retry if the response is invalid
         while not valid_response:
             response = requests.post(self.url, data=query)
-            if response.status_code == 200:
+            if response.status_code == 200 and response.headers['Content-Type'] == 'application/json':
                 valid_response = True
                 osm_data = response.json()
             else:
-                logging.warning(f'Invalid response code: {response.status_code}. Retrying in 30 seconds...')
+                logging.warning(f'Invalid response from server: {response.status_code} - {response.headers["Content-Type"]}. Retrying in 30 seconds...')
                 time.sleep(30)
         return osm_data
 
