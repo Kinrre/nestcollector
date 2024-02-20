@@ -25,14 +25,15 @@ class Overpass:
         bboxes (List[str]): The bounding boxes to query.
     """
 
-    def __init__(self, areas_path: str) -> None:
+    def __init__(self, endpoints: List[str], areas_path: str) -> None:
         """
         Initializes the Overpass class.
 
         Args:
             areas_path (str): The path to the areas GeoJSON file.
         """
-        self.url = 'https://overpass.kumi.systems/api/interpreter'
+        self.endpoints = endpoints
+        self.endpoint_idx = 0
         self.area_names = self._get_names(areas_path)
         self.polygons = self._load_polygons(areas_path)
         self.bboxes = self._get_bboxes()
@@ -118,13 +119,16 @@ class Overpass:
         osm_data = None
         # Retry if the response is invalid
         while not valid_response:
-            response = requests.post(self.url, data=query)
+            response = requests.post(self.endpoints[self.endpoint_idx], data=query)
             if response.status_code == 200 and response.headers['Content-Type'] == 'application/json':
                 valid_response = True
                 osm_data = response.json()
             else:
-                logging.warning(f'Invalid response from server: {response.status_code} - {response.headers["Content-Type"]}. Retrying in 30 seconds...')
-                time.sleep(30)
+                logging.warning(f'Invalid response from server: {response.status_code} - {response.headers["Content-Type"]}. Moving to the next endpoint...')
+                self.endpoint_idx = (self.endpoint_idx + 1) % len(self.endpoints)
+                if self.endpoint_idx % len(self.endpoints) == 0:
+                    logging.error('All endpoints are down. Waiting 30 seconds before retrying...')
+                    time.sleep(30)
         return osm_data
 
     def get_osm_data(self, date: str = '2019-02-24T00:00:00Z') -> List[dict]:

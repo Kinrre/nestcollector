@@ -3,6 +3,7 @@ Script to run nestcollector.
 """
 
 import configparser
+import json
 import logging
 import os
 import sys
@@ -10,6 +11,8 @@ import sys
 from nestcollector.nest import Nest
 from nestcollector.database import Database
 from nestcollector.overpass import Overpass
+
+from typing import List
 
 CONFIG_PATH = 'config/config.ini'
 CONFIG_EXAMPLE_PATH = 'config/config.ini.example'
@@ -51,7 +54,8 @@ class NestCollector:
         self.config.read(CONFIG_PATH)
 
         # Get the Overpass API instance
-        self.overpass = Overpass(areas_path=CONFIG_AREAS_PATH)
+        print(self.get_overpass_endpoints())
+        self.overpass = Overpass(endpoints=self.get_overpass_endpoints(), areas_path=CONFIG_AREAS_PATH)
 
         # Get the database instance
         self.db = Database(
@@ -151,6 +155,15 @@ class NestCollector:
             bool: Whether to buffer multipolygons.
         """
         return self.config['NESTS']['BUFFER_MULTIPOLYGONS'].capitalize() == 'True'
+    
+    def get_overpass_endpoints(self) -> List[str]:
+        """
+        Returns the Overpass endpoints.
+
+        Returns:
+            List[str]: The Overpass endpoints.
+        """
+        return json.loads(self.config['OVERPASS']['ENDPOINTS'])
 
     def get_db_host(self) -> str:
         """
