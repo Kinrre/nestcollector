@@ -54,7 +54,6 @@ class NestCollector:
         self.config.read(CONFIG_PATH)
 
         # Get the Overpass API instance
-        print(self.get_overpass_endpoints())
         self.overpass = Overpass(endpoints=self.get_overpass_endpoints(), areas_path=CONFIG_AREAS_PATH)
 
         # Get the database instance
