@@ -14,7 +14,7 @@ if [[ -z $nest_processing_frequency_hours ]] ;then
 fi
 
 if [[ ! -f $golbat_latest_log ]] ;then
-  echo "can't find $golbat_latest_log, checkit is correctly set in config"
+  echo "can't find $golbat_latest_log, check if correctly set in config"
   exit
 fi
 
@@ -23,6 +23,14 @@ exec 3> >(MYSQL_PWD=$sql_pass mysql -h$db_ip -P$db_port -u$sql_user $golbat_db -
 
 echo ""
 echo "Starting nest processing script"
+
+#create temp table for current active nests updated at least once
+if [[ ! -z $poracle_host ]] ;then
+  echo "Add current active nests to (temp) table"
+  echo "drop table if exists oldnest;" >&3
+  echo "create table oldnest (nest_id bigint(20), pokemon_id int(11)) ENGINE=MEMORY as (select nest_id,pokemon_id from nests where active=1 and pokemon_id is not NULL);" >&3
+  sleep 1s
+fi
 
 # process
 echo "Processing nests"
@@ -61,6 +69,34 @@ if [[ ! -z $nest_min_spawn_hr ]] ;then
   echo "update nests set discarded='spawnhr_warn' where pokemon_avg < $nest_min_spawn_hr and active=1 and (discarded <> 'spawnhr_ban' or discarded is NULL);" >&3
 fi
 
+sendporacle(){
+  echo "Send $counter changed nests to poracle"
+  sed -i '1s/^/[/' $folder/tmp/changednests.json
+  sed -i '$s/.$/\]/' $folder/tmp/changednests.json
+  curl -sSk -X POST http://$poracle_host:$poracle_port -H "Expect:" -H "Accept: application/json" -H "Content-Type: application/json" -d @$folder/tmp/changednests.json
+  rm $folder/tmp/changednests.json
+  echo ""
+}
+
+# Send Poracle webhook for changed nests
+if [[ ! -z $poracle_host ]] ;then
+  mkdir -p $folder/tmp
+  rm -f $folder/tmp/changednests.json
+  sleep 3s
+  counter=0
+  while read -r line ; do
+    reverse=$(echo $line | awk -F': "' '{print $4}' | sed 's/POLYGON((//g' | sed 's/))"}}//g' | sed 's/,/\n/g' | awk '{ print $2,$1}' | tr '\n' ',' | sed 's/,*$//g' | sed 's/,/],[/g' | sed 's/ /,/g')
+    echo $line | sed -e "s/POLYGON((.*))\"/[[[$reverse]]]\", \"type\":0, \"poly_type\":0, \"nest_submitted_by\":null/g" >> $folder/tmp/changednests.json
+    counter=$((counter+1))
+    # send webhook
+    if (( $counter > 49 )) ;then sendporacle ;fi
+  done < <(MYSQL_PWD=$sql_pass mysql -h$db_ip -P$db_port -u$sql_user $golbat_db -NB -e "select concat('{\"type\": \"nest\", \"message\": ',json_object('nest_id',a.nest_id,'name',a.name,'form',a.pokemon_form,'lat',a.lat,'lon',a.lon,'pokemon_id',a.pokemon_id,'pokemon_count',a.pokemon_count,'pokemon_avg',a.pokemon_avg,'pokemon_ratio',a.pokemon_ratio, 'current_time', unix_timestamp(), 'reset_time', unix_timestamp(), 'poly_path', astext(polygon)),'},') from nests a, oldnest b where a.active=1 and a.nest_id=b.nest_id and a.pokemon_id<>b.pokemon_id;")
+  # send remaining webhook
+  if [[ -f $folder/tmp/changednests.json ]] ;then sendporacle ;fi
+  # drop temp table
+  echo "Drop (temp) old nest table"
+  echo "drop table oldnest;" >&3
+fi
 #close mysql connection
 sleep 10s
 exec 3>&-

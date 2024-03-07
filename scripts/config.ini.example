@@ -12,6 +12,10 @@ golbatsecret=
 golbat_path=
 golbat_latest_log=		# i.e. /home/dkmur/.pm2/logs/golbat-out.log
 
+### Poracle
+poracle_host=
+poracle_port=
+
 ### nestcollector
 nestcollector_path=
 
