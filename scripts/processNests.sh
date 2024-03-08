@@ -75,6 +75,7 @@ sendporacle(){
   sed -i '$s/.$/\]/' $folder/tmp/changednests.json
   curl -sSk -X POST http://$poracle_host:$poracle_port -H "Expect:" -H "Accept: application/json" -H "Content-Type: application/json" -d @$folder/tmp/changednests.json
   rm $folder/tmp/changednests.json
+  counter=0
   echo ""
 }
 
