@@ -73,8 +73,14 @@ sendporacle(){
   echo "Send $counter changed nests to poracle"
   sed -i '1s/^/[/' $folder/tmp/changednests.json
   sed -i '$s/.$/\]/' $folder/tmp/changednests.json
+  sed -i 's/\\\\/\\/g' $folder/tmp/changednests.json
   curl -sSk -X POST http://$poracle_host:$poracle_port -H "Expect:" -H "Accept: application/json" -H "Content-Type: application/json" -d @$folder/tmp/changednests.json
+#  time=$(date '+%Y%m%d_%H:%M:%S')
+#  mv $folder/tmp/changednests.json $folder/tmp/${time}_changednests.json
+#  sleep 1s
   rm $folder/tmp/changednests.json
+
+
   counter=0
   echo ""
 }
